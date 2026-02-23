@@ -1,24 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   codexion.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/23 12:33:42 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/02/23 12:46:07 by otahiri-         ###   ########.fr       */
+/*   Created: 2026/02/23 09:49:40 by otahiri-          #+#    #+#             */
+/*   Updated: 2026/02/23 12:46:01 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "codexion.h"
 
-int	main(int argc, char **argv)
+#ifndef CODEXION_H
+# define CODEXION_H
+# include <stdio.h>
+# include <stdlib.h>
+# include <pthread.h>
+
+typedef struct s_input
 {
-	t_input		*input;
-	pthread_t	thread;
+	int	number_of_coders;
+	int	time_to_burnout;
+	int	time_to_compile;
+	int	time_to_debug;
+	int	time_to_refactor;
+	int	number_of_compiles_required;
+	int	dongle_cooldown;
+	int	scheduler;
+}	t_input;
 
-	if (argc != 9)
-		return (1);
-	input = parse(argv);
-	if (!input)
-		return (0);
-}
+typedef struct s_coder
+{
+	int	main;
+}	t_coder;
+
+t_input	*parse(char **argv);
+
+#endif
