@@ -12,27 +12,40 @@
 
 #ifndef CODEXION_H
 # define CODEXION_H
+# include <pthread.h>
 # include <stdio.h>
 # include <stdlib.h>
-# include <pthread.h>
+
+typedef enum s_stage
+{
+	COMPILING,
+	DEBUGGING,
+	REFACTORING,
+}					t_stage;
+
+typedef struct s_dongle
+{
+	pthread_mutex_t	dongle;
+	int				cooldown;
+}					t_dongle;
 
 typedef struct s_input
 {
-	int	number_of_coders;
-	int	time_to_burnout;
-	int	time_to_compile;
-	int	time_to_debug;
-	int	time_to_refactor;
-	int	number_of_compiles_required;
-	int	dongle_cooldown;
-	int	scheduler;
-}	t_input;
+	int				number_of_coders;
+	int				time_to_burnout;
+	int				time_to_compile;
+	int				time_to_debug;
+	int				time_to_refactor;
+	int				number_of_compiles_required;
+	int				dongle_cooldown;
+	int				scheduler;
+}					t_input;
 
 typedef struct s_coder
 {
-	int	main;
-}	t_coder;
+	int				main;
+}					t_coder;
 
-t_input	*parse(char **argv);
+t_input				*parse(char **argv);
 
 #endif
