@@ -11,13 +11,26 @@
 /* ************************************************************************** */
 #include "codexion.h"
 
+int	burnout(t_coder *coder, t_input *input)
+{
+	usleep(input->time_to_burnout);
+	return (1);
+}
+
+void	compile(t_coder coder)
+{
+	return ;
+}
+
 int	main(int argc, char **argv)
 {
 	t_input	*input;
+	t_coder	*coder;
 
 	if (argc != 9)
 		return (1);
 	input = parse(argv);
 	if (!input)
 		return (0);
+	coder = malloc(sizeof(t_coder));
 }

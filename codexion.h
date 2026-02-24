@@ -16,6 +16,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
+# include <unistd.h>
 
 typedef enum s_stage
 {
@@ -46,6 +47,7 @@ typedef struct s_coder
 {
 	pthread_t		thread;
 	int				id;
+	int				done;
 
 }					t_coder;
 
