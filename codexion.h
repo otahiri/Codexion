@@ -15,6 +15,7 @@
 # include <pthread.h>
 # include <stdio.h>
 # include <stdlib.h>
+# include <string.h>
 
 typedef enum s_stage
 {
@@ -38,7 +39,7 @@ typedef struct s_input
 	int				time_to_refactor;
 	int				number_of_compiles_required;
 	int				dongle_cooldown;
-	int				scheduler;
+	char			*scheduler;
 }					t_input;
 
 typedef struct s_coder

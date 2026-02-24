@@ -1,24 +1,13 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   garbage_collector.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/23 12:33:42 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/02/23 12:46:07 by otahiri-         ###   ########.fr       */
+/*   Created: 2026/02/24 12:38:28 by otahiri-          #+#    #+#             */
+/*   Updated: 2026/02/24 12:49:45 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "codexion.h"
 
-int	main(int argc, char **argv)
-{
-	t_input		*input;
-
-	if (argc != 9)
-		return (1);
-	input = parse(argv);
-	if (!input)
-		return (0);
-	printf("%s\n", input->scheduler);
-}
+void *allocate()

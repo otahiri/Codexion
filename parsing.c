@@ -23,13 +23,14 @@ t_input	*parse(char **argv)
 	input->time_to_refactor = atoi(argv[5]);
 	input->number_of_compiles_required = atoi(argv[6]);
 	input->dongle_cooldown = atoi(argv[7]);
-	input->scheduler = atoi(argv[8]);
+	input->scheduler = argv[8];
 	if (!input->number_of_coders || !input->time_to_burnout
 		|| !input->time_to_compile || !input->time_to_debug
 		|| !input->time_to_refactor || !input->number_of_compiles_required
-		|| !input->dongle_cooldown || !input->scheduler)
+		|| !input->dongle_cooldown || !(strcmp(input->scheduler, "fifo")
+			|| !strcmp(input->scheduler, "edf")))
 	{
-		return (NULL);
+		return (free(input), NULL);
 	}
 	return (input);
 }
