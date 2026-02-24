@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 09:49:40 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/02/23 12:46:01 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/02/24 13:38:12 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,14 @@ typedef struct s_input
 	int				time_to_refactor;
 	int				number_of_compiles_required;
 	int				dongle_cooldown;
-	char			*scheduler;
+	const char		*scheduler;
 }					t_input;
 
 typedef struct s_coder
 {
-	int				main;
+	pthread_t		thread;
+	int				id;
+
 }					t_coder;
 
 t_input				*parse(char **argv);
