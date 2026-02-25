@@ -6,31 +6,24 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 12:33:42 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/02/23 12:46:07 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/02/25 12:14:14 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "codexion.h"
+#include <pthread.h>
+#include <stdio.h>
 
-int	burnout(t_coder *coder, t_input *input)
+void	*foo(void *arg)
 {
-	usleep(input->time_to_burnout);
-	return (1);
+	(void)arg;
+	printf("Thread is running.\n");
+	return (NULL);
 }
 
-void	compile(t_coder coder)
+int	main(void)
 {
-	return ;
-}
+	pthread_t	thread1;
 
-int	main(int argc, char **argv)
-{
-	t_input	*input;
-	t_coder	*coder;
-
-	if (argc != 9)
-		return (1);
-	input = parse(argv);
-	if (!input)
-		return (0);
-	coder = malloc(sizeof(t_coder));
+	pthread_create(&thread1, NULL, foo, NULL);
+	pthread_join(thread1, NULL);
+	return (0);
 }

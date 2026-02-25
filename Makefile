@@ -10,7 +10,7 @@ CFLAGS = -Wall -Werror -Wextra
 all = $(NAME)
 
 
-SRCS = main.c parsing.c
+SRCS = main.c
 
 
 OBJ = $(SRCS:.c=.o)

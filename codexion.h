@@ -48,6 +48,11 @@ typedef struct s_coder
 	pthread_t		thread;
 	int				id;
 	int				done;
+	int				time_to_burnout;
+	int				time_to_compile;
+	int				time_to_debug;
+	int				time_to_refactor;
+	int				number_of_compiles_required;
 
 }					t_coder;
 
