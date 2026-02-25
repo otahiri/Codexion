@@ -10,11 +10,33 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
+#include <string.h>
+
+int	ft_isalpha(char *str)
+{
+	while (str)
+	{
+		if (*str < '0' || *str > '9')
+			return (1);
+		str++;
+	}
+	return (0);
+}
 
 t_input	*parse(char **argv)
 {
 	t_input	*input;
+	int		i;
 
+	i = 1;
+	while (i < 8)
+	{
+		if (!ft_isalpha(argv[i]))
+		{
+			return (NULL);
+		}
+		i++;
+	}
 	input = malloc(sizeof(t_input));
 	input->number_of_coders = atoi(argv[1]);
 	input->time_to_burnout = atoi(argv[2]);
@@ -24,13 +46,7 @@ t_input	*parse(char **argv)
 	input->number_of_compiles_required = atoi(argv[6]);
 	input->dongle_cooldown = atoi(argv[7]);
 	input->scheduler = argv[8];
-	if (!input->number_of_coders || !input->time_to_burnout
-		|| !input->time_to_compile || !input->time_to_debug
-		|| !input->time_to_refactor || !input->number_of_compiles_required
-		|| !input->dongle_cooldown || !(strcmp(input->scheduler, "fifo")
-			|| !strcmp(input->scheduler, "edf")))
-	{
+	if (strcmp(input->scheduler, "fifo") && strcmp(input->scheduler, "edf"))
 		return (free(input), NULL);
-	}
 	return (input);
 }
