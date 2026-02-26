@@ -17,6 +17,7 @@
 # include <stdlib.h>
 # include <string.h>
 # include <unistd.h>
+# include <stdbool.h>
 
 typedef enum s_stage
 {
@@ -52,5 +53,6 @@ typedef struct s_coder
 }					t_coder;
 
 t_input				*parse(char **argv);
+
 
 #endif
