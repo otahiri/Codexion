@@ -52,11 +52,13 @@ typedef struct s_coder
 	int				done;
 	t_input			*values;
 	long			start;
+	t_dongle		*left_hand;
+	t_dongle		*right_hand;
 }					t_coder;
 
 t_input				*parse(char **argv);
-void				*compile(t_coder *coder);
-void				*debug(t_coder *coder);
+void				compile(t_coder *coder);
+void				debug(t_coder *coder);
 void				refactor(t_coder *coder);
 void				*run_coder(void *arg);
 long				get_time(long start);

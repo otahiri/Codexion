@@ -10,9 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
-#include <string.h>
 
-int	ft_isalpha(char *str)
+static int	ft_isdigit(char *str)
 {
 	while (str)
 	{
@@ -23,6 +22,20 @@ int	ft_isalpha(char *str)
 	return (0);
 }
 
+static t_input	*ft_valid(t_input *input)
+{
+	if ((strcmp(input->scheduler, "fifo") && strcmp(input->scheduler, "edf"))
+		|| input->number_of_coders <= 0
+		|| input->number_of_compiles_required <= 0 || input->time_to_burnout < 0
+		|| input->time_to_compile < 0 || input->time_to_debug < 0
+		|| input->time_to_refactor < 0 || input->dongle_cooldown < 0)
+	{
+		free(input);
+		return (NULL);
+	}
+	return (input);
+}
+
 t_input	*parse(char **argv)
 {
 	t_input	*input;
@@ -31,10 +44,8 @@ t_input	*parse(char **argv)
 	i = 1;
 	while (i < 8)
 	{
-		if (!ft_isalpha(argv[i]))
-		{
+		if (!ft_isdigit(argv[i]) || strlen(argv[i]) > 10 || argv[i][0] == '-')
 			return (NULL);
-		}
 		i++;
 	}
 	input = malloc(sizeof(t_input));
@@ -46,7 +57,5 @@ t_input	*parse(char **argv)
 	input->number_of_compiles_required = atoi(argv[6]);
 	input->dongle_cooldown = atoi(argv[7]);
 	input->scheduler = argv[8];
-	if (strcmp(input->scheduler, "fifo") && strcmp(input->scheduler, "edf"))
-		return (free(input), NULL);
-	return (input);
+	return (ft_valid(input));
 }

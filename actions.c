@@ -10,26 +10,25 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
-#include <stdio.h>
+#include <bits/pthreadtypes.h>
+#include <pthread.h>
 
-void	*compile(t_coder *coder)
+void	compile(t_coder *coder)
 {
 	t_input	*input;
 
 	input = coder->values;
 	printf("%ld %d is compiling\n", get_time(coder->start), coder->id);
 	usleep(input->time_to_compile);
-	return (NULL);
 }
 
-void	*debug(t_coder *coder)
+void	debug(t_coder *coder)
 {
 	t_input	*input;
 
 	input = coder->values;
 	printf("%ld %d is debuggin\n", get_time(coder->start), coder->id);
 	usleep(input->time_to_debug);
-	return (NULL);
 }
 
 void	refactor(t_coder *coder)
@@ -37,21 +36,24 @@ void	refactor(t_coder *coder)
 	t_input	*input;
 
 	input = coder->values;
-	printf("%ld %d is refactoring\n", get_time(coder->start),
-		coder->id);
+	printf("%ld %d is refactoring\n", get_time(coder->start), coder->id);
 	usleep(input->time_to_refactor);
 }
 
 void	*run_coder(void *arg)
 {
-	t_coder	*coder;
+	t_coder			*coder;
+	pthread_mutex_t	wait;
 
+	pthread_mutex_lock(&wait);
+	pthread_mutex_unlock(&wait);
 	coder = (t_coder *)arg;
-	if (!coder->done)
+	while (!coder->done)
 	{
 		compile(coder);
 		refactor(coder);
 		debug(coder);
+		coder->done = 1;
 	}
 	return (NULL);
 }

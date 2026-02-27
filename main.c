@@ -10,36 +10,83 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
+#include <stdlib.h>
+#include <unistd.h>
 
-t_coder	*make_coder(int id, long start, t_input *value)
+long	get_start_time(void)
 {
-	t_coder	*coder;
+	struct timeval	tv;
 
-	coder = malloc(sizeof(t_coder));
-	coder->done = false;
-	coder->id = id;
-	coder->values = value;
-	coder->start = start;
-	return (coder);
+	gettimeofday(&tv, NULL);
+	return (tv.tv_usec);
+}
+
+int	free_all(t_coder **coders, t_input *input)
+{
+	int	i;
+
+	i = 0;
+	if (input)
+		free(input);
+	if (coders)
+	{
+		while (coders[i])
+			free(coders[i++]);
+		free(coders);
+	}
+	return (0);
+}
+
+t_coder	**make_coder(long start, t_input *input)
+{
+	t_coder	**coders;
+	int		i;
+
+	i = 0;
+	if (!input)
+		return (NULL);
+	coders = malloc(sizeof(t_coder *) * input->number_of_coders);
+	if (!coders)
+		return (NULL);
+	while (i < input->number_of_coders)
+	{
+		coders[i] = malloc(sizeof(t_coder));
+		if (!coders[i])
+		{
+			free_all(coders, NULL);
+			return (NULL);
+		}
+		coders[i]->done = false;
+		coders[i]->id = i + 1;
+		coders[i]->start = start;
+		coders[i]->values = input;
+		i++;
+	}
+	return (coders);
 }
 
 int	main(int argc, char **argv)
 {
-	t_input			*input;
-	t_coder			*coder;
-	struct timeval	tv;
-	long			start;
+	t_coder	**coders;
+	t_input	*input;
+	long	start;
+	int		i;
 
-	gettimeofday(&tv, NULL);
-	start = tv.tv_usec;
-	printf("%ld\n", get_time(start));
-	usleep(900);
-	printf("%ld\n", get_time(start));
+	i = 0;
+	start = get_start_time();
 	if (argc != 9)
 		return (1);
 	input = parse(argv);
-	coder = make_coder(1, start, input);
-	pthread_create(&coder->thread, NULL, run_coder, coder);
-	pthread_join(coder->thread, NULL);
-	return (0);
+	coders = make_coder(start, input);
+	if (!coders)
+		return (free_all(NULL, input));
+	while (coders[i])
+	{
+		pthread_create(&coders[i]->thread, NULL, run_coder, coders[i]);
+		i++;
+	}
+	i = 0;
+	while (coders[i])
+		pthread_join(coders[i++]->thread, NULL);
+	return (free_all(coders, input));
 }
