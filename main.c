@@ -6,48 +6,12 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 12:33:42 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/02/25 12:14:14 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/02/27 12:14:41 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
 
-void	*compile(void *arg)
-{
-	t_input	*input;
-	t_coder	*coder;
-
-	coder = (t_coder *)arg;
-	input = coder->values;
-	printf("coder %d is compiling\n", coder->id);
-	usleep(input->time_to_compile);
-	return (NULL);
-}
-
-void	*debug(void *arg)
-{
-	t_input	*input;
-	t_coder	*coder;
-
-	coder = (t_coder *)arg;
-	input = coder->values;
-	printf("coder %d is debugging\n", coder->id);
-	usleep(input->time_to_debug);
-	return (NULL);
-}
-
-void	*refactor(void *arg)
-{
-	t_input	*input;
-	t_coder	*coder;
-
-	coder = (t_coder *)arg;
-	input = coder->values;
-	printf("coder %d is refactoring\n", coder->id);
-	usleep(input->time_to_refactor);
-	return (NULL);
-}
-
-t_coder	*make_coder(int id, t_input *value)
+t_coder	*make_coder(int id, long start, t_input *value)
 {
 	t_coder	*coder;
 
@@ -55,18 +19,27 @@ t_coder	*make_coder(int id, t_input *value)
 	coder->done = false;
 	coder->id = id;
 	coder->values = value;
+	coder->start = start;
 	return (coder);
 }
 
 int	main(int argc, char **argv)
 {
-	t_input	*input;
-	t_coder	*coder;
+	t_input			*input;
+	t_coder			*coder;
+	struct timeval	tv;
+	long			start;
 
+	gettimeofday(&tv, NULL);
+	start = tv.tv_usec;
+	printf("%ld\n", get_time(start));
+	usleep(900);
+	printf("%ld\n", get_time(start));
 	if (argc != 9)
 		return (1);
 	input = parse(argv);
-	coder = make_coder(1, input);
-	pthread_create(&coder->thread, NULL, compile(coder), input);
+	coder = make_coder(1, start, input);
+	pthread_create(&coder->thread, NULL, run_coder, coder);
+	pthread_join(coder->thread, NULL);
 	return (0);
 }

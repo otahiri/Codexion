@@ -6,18 +6,19 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 09:49:40 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/02/24 13:38:12 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/02/27 12:14:35 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CODEXION_H
 # define CODEXION_H
 # include <pthread.h>
+# include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
+# include <sys/time.h>
 # include <unistd.h>
-# include <stdbool.h>
 
 typedef enum s_stage
 {
@@ -50,9 +51,14 @@ typedef struct s_coder
 	int				id;
 	int				done;
 	t_input			*values;
+	long			start;
 }					t_coder;
 
 t_input				*parse(char **argv);
-
+void				*compile(t_coder *coder);
+void				*debug(t_coder *coder);
+void				refactor(t_coder *coder);
+void				*run_coder(void *arg);
+long				get_time(long start);
 
 #endif
