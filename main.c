@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
-#include <stdlib.h>
-#include <unistd.h>
 
 long	get_start_time(void)
 {
