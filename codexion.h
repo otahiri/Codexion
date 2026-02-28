@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 09:49:40 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/02/27 12:14:35 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/02/28 15:27:09 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,6 @@ typedef enum s_stage
 	REFACTORING,
 }					t_stage;
 
-typedef struct s_dongle
-{
-	pthread_mutex_t	dongle;
-	int				cooldown;
-}					t_dongle;
-
 typedef struct s_input
 {
 	int				number_of_coders;
@@ -43,6 +37,7 @@ typedef struct s_input
 	int				number_of_compiles_required;
 	int				dongle_cooldown;
 	const char		*scheduler;
+	pthread_mutex_t	*dongles;
 }					t_input;
 
 typedef struct s_coder
@@ -52,8 +47,8 @@ typedef struct s_coder
 	int				done;
 	t_input			*values;
 	long			start;
-	t_dongle		*left_hand;
-	t_dongle		*right_hand;
+	pthread_mutex_t	*left_hand;
+	pthread_mutex_t	*right_hand;
 }					t_coder;
 
 t_input				*parse(char **argv);
@@ -61,6 +56,6 @@ void				compile(t_coder *coder);
 void				debug(t_coder *coder);
 void				refactor(t_coder *coder);
 void				*run_coder(void *arg);
-long				get_time(long start);
+long long			get_time(long long start);
 
 #endif

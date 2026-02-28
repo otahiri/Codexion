@@ -16,10 +16,10 @@ long	get_start_time(void)
 	struct timeval	tv;
 
 	gettimeofday(&tv, NULL);
-	return (tv.tv_usec);
+	return (tv.tv_usec + (tv.tv_sec * 1000));
 }
 
-int	free_all(t_coder **coders, t_input *input)
+int	free_all(t_coder **coders, t_input *input, int count)
 {
 	int	i;
 
@@ -28,7 +28,7 @@ int	free_all(t_coder **coders, t_input *input)
 		free(input);
 	if (coders)
 	{
-		while (coders[i])
+		while (i < count)
 			free(coders[i++]);
 		free(coders);
 	}
@@ -51,7 +51,7 @@ t_coder	**make_coder(long start, t_input *input)
 		coders[i] = malloc(sizeof(t_coder));
 		if (!coders[i])
 		{
-			free_all(coders, NULL);
+			free_all(coders, NULL, i);
 			return (NULL);
 		}
 		coders[i]->done = false;
@@ -77,7 +77,7 @@ int	main(int argc, char **argv)
 	input = parse(argv);
 	coders = make_coder(start, input);
 	if (!coders)
-		return (free_all(NULL, input));
+		return (free_all(NULL, input, input->number_of_coders));
 	while (coders[i])
 	{
 		pthread_create(&coders[i]->thread, NULL, run_coder, coders[i]);
@@ -86,5 +86,5 @@ int	main(int argc, char **argv)
 	i = 0;
 	while (coders[i])
 		pthread_join(coders[i++]->thread, NULL);
-	return (free_all(coders, input));
+	return (free_all(coders, input, input->number_of_coders));
 }

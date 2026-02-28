@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
-#include <bits/pthreadtypes.h>
-#include <pthread.h>
 
 void	compile(t_coder *coder)
 {
@@ -42,11 +40,10 @@ void	refactor(t_coder *coder)
 
 void	*run_coder(void *arg)
 {
-	t_coder			*coder;
-	pthread_mutex_t	wait;
+	t_coder	*coder;
+	int		count;
 
-	pthread_mutex_lock(&wait);
-	pthread_mutex_unlock(&wait);
+	count = 0;
 	coder = (t_coder *)arg;
 	while (!coder->done)
 	{

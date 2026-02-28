@@ -60,6 +60,16 @@ static t_input	*ft_valid(t_input **input)
 	return ((*input));
 }
 
+void	alloc_dongles(int count, t_input *input)
+{
+	int	i;
+
+	i = 0;
+	input->dongles = malloc(sizeof(pthread_mutex_t) * count);
+	while (i < count)
+		pthread_mutex_init(&(input->dongles[i++]), NULL);
+}
+
 t_input	*parse(char **argv)
 {
 	t_input	*input;
@@ -81,5 +91,6 @@ t_input	*parse(char **argv)
 	input->number_of_compiles_required = ft_atoi(argv[6]);
 	input->dongle_cooldown = ft_atoi(argv[7]);
 	input->scheduler = argv[8];
+	alloc_dongles(input->number_of_coders, input);
 	return (ft_valid(&input));
 }
