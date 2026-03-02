@@ -6,12 +6,11 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 12:33:42 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/02/27 12:14:41 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/02 14:56:10 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
-#include <bits/pthreadtypes.h>
-#include <pthread.h>
+#include <stdlib.h>
 
 long	get_start_time(void)
 {
@@ -21,23 +20,27 @@ long	get_start_time(void)
 	return (tv.tv_sec * 1000);
 }
 
-int	free_all(t_coder **coders, t_input *input, int count)
+int	free_all(t_coder **coders, t_input *input, t_dongle **dongles, int count)
 {
-	int				i;
+	int	i;
 
 	i = 0;
 	if (input)
 		free(input);
+	if (dongles)
+	{
+		while (i < count)
+			pthread_mutex_destroy(&dongles[i++]->dongle);
+		free(dongles);
+	}
 	if (coders)
 	{
 		while (i < count)
 		{
-			pthread_mutex_destroy(&input->dongles[i]);
 			free(coders[i++]);
 		}
 		free(coders);
 	}
-	free(input->dongles);
 	return (0);
 }
 
@@ -57,7 +60,7 @@ t_coder	**make_coder(long start, t_input *input)
 		coders[i] = malloc(sizeof(t_coder));
 		if (!coders[i])
 		{
-			free_all(coders, NULL, i);
+			free_all(coders, NULL, NULL, i);
 			return (NULL);
 		}
 		coders[i]->done = false;
@@ -69,28 +72,42 @@ t_coder	**make_coder(long start, t_input *input)
 	return (coders);
 }
 
-int	main(int argc, char **argv)
+t_dongle	**make_dongles(int count)
 {
-	t_coder	**coders;
-	t_input	*input;
-	long	start;
-	int		i;
+	t_dongle	**dongles;
+	int			i;
 
 	i = 0;
+	dongles = malloc(sizeof(t_dongle *) * count);
+	if (!dongles)
+		return (NULL);
+	while (i < count)
+	{
+		dongles[i] = malloc(sizeof(t_dongle));
+		dongles[i]->cooldown = 0;
+		dongles[i]->in_use = false;
+		pthread_mutex_init(&dongles[i]->dongle, NULL);
+		i++;
+	}
+	return (dongles);
+}
+
+int	main(int argc, char **argv)
+{
+	t_coder		**coders;
+	t_input		*input;
+	t_dongle	**dongles;
+	long		start;
+
 	start = get_start_time();
 	if (argc != 9)
 		return (1);
 	input = parse(argv);
 	coders = make_coder(start, input);
 	if (!coders)
-		return (free_all(NULL, input, input->number_of_coders));
-	while (coders[i])
-	{
-		pthread_create(&coders[i]->thread, NULL, run_coder, coders[i]);
-		i++;
-	}
-	i = 0;
-	while (coders[i])
-		pthread_join(coders[i++]->thread, NULL);
-	return (free_all(coders, input, input->number_of_coders));
+		return (free_all(NULL, input, NULL, input->number_of_coders));
+	dongles = make_dongles(input->number_of_coders);
+	if (!dongles)
+		return (free_all(coders, input, NULL, input->number_of_coders));
+	return (make_threads(coders, dongles, input));
 }

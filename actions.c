@@ -6,18 +6,28 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 10:18:09 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/02/27 12:21:23 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/02 15:15:20 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
+#include <unistd.h>
 
 void	compile(t_coder *coder)
 {
-	t_input	*input;
+	t_input			*input;
+	pthread_cond_t	cond;
 
+	pthread_cond_init(&cond, NULL);
+	while (coder->left->cooldown > get_time(coder->start)
+		&& coder->right->cooldown > get_time(coder->start))
+		usleep(coder->left->cooldown * 1000);
+	pthread_mutex_lock(&coder->right->dongle);
+	pthread_mutex_lock(&coder->left->dongle);
 	input = coder->values;
+	usleep(coder->values->time_to_compile * 1000);
 	printf("%ld %d is compiling\n", get_time(coder->start), coder->id);
-	usleep(input->time_to_compile * 1000);
+	pthread_mutex_unlock(&coder->right->dongle);
+	pthread_mutex_unlock(&coder->left->dongle);
 }
 
 void	debug(t_coder *coder)
@@ -53,4 +63,25 @@ void	*run_coder(void *arg)
 		coder->done = 1;
 	}
 	return (NULL);
+}
+
+int	make_threads(t_coder **coders, t_dongle **dongles, t_input *input)
+{
+	int	i;
+
+	i = 0;
+	while (i < input->number_of_coders)
+	{
+		coders[i]->left = dongles[i];
+		coders[i]->right = dongles[(i + 1) % input->number_of_coders];
+		i++;
+	}
+	i = 0;
+	while (i < input->number_of_coders)
+	{
+		pthread_create(&coders[i]->thread, NULL, run_coder, coders[i]);
+		pthread_join(coders[i]->thread, NULL);
+		i++;
+	}
+	return (free_all(coders, input, dongles, input->number_of_coders));
 }

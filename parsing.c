@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 10:11:12 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/02/24 13:38:19 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/02 14:54:22 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
@@ -60,16 +60,6 @@ static t_input	*ft_valid(t_input **input)
 	return ((*input));
 }
 
-void	alloc_dongles(int count, t_input *input)
-{
-	int	i;
-
-	i = 0;
-	input->dongles = malloc(sizeof(pthread_mutex_t) * count);
-	while (i < count)
-		pthread_mutex_init(&(input->dongles[i++]), NULL);
-}
-
 t_input	*parse(char **argv)
 {
 	t_input	*input;
@@ -91,6 +81,5 @@ t_input	*parse(char **argv)
 	input->number_of_compiles_required = ft_atoi(argv[6]);
 	input->dongle_cooldown = ft_atoi(argv[7]);
 	input->scheduler = argv[8];
-	alloc_dongles(input->number_of_coders, input);
 	return (ft_valid(&input));
 }

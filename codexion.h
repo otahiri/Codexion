@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 09:49:40 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/02/28 15:27:09 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/02 14:38:46 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,15 @@ typedef struct s_input
 	int				number_of_compiles_required;
 	int				dongle_cooldown;
 	const char		*scheduler;
-	pthread_mutex_t	*dongles;
 }					t_input;
+
+typedef struct s_dongle
+{
+	pthread_mutex_t	dongle;
+	int				cooldown;
+	bool			in_use;
+
+}					t_dongle;
 
 typedef struct s_coder
 {
@@ -47,8 +54,8 @@ typedef struct s_coder
 	int				done;
 	t_input			*values;
 	long			start;
-	pthread_mutex_t	*left_hand;
-	pthread_mutex_t	*right_hand;
+	t_dongle		*left;
+	t_dongle		*right;
 }					t_coder;
 
 t_input				*parse(char **argv);
@@ -57,5 +64,12 @@ void				debug(t_coder *coder);
 void				refactor(t_coder *coder);
 void				*run_coder(void *arg);
 long				get_time(long start);
+long				get_start_time(void);
+int					free_all(t_coder **coders, t_input *input,
+						t_dongle **dongles, int count);
+t_coder				**make_coder(long start, t_input *input);
+t_dongle			**make_dongles(int count);
+int					make_threads(t_coder **coders, t_dongle **dongles,
+						t_input *input);
 
 #endif
