@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 09:49:40 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/03/02 14:38:46 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/02 17:03:04 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,8 @@ void				compile(t_coder *coder);
 void				debug(t_coder *coder);
 void				refactor(t_coder *coder);
 void				*run_coder(void *arg);
-long				get_time(long start);
-long				get_start_time(void);
+long long			get_time(long start);
+long long			get_start_time(void);
 int					free_all(t_coder **coders, t_input *input,
 						t_dongle **dongles, int count);
 t_coder				**make_coder(long start, t_input *input);

@@ -6,18 +6,17 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 12:33:42 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/03/02 14:56:10 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/02 17:05:37 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
-#include <stdlib.h>
 
-long	get_start_time(void)
+long long	get_start_time(void)
 {
 	struct timeval	tv;
 
 	gettimeofday(&tv, NULL);
-	return (tv.tv_sec * 1000);
+	return ((tv.tv_usec / 1000) + (tv.tv_sec * 1000));
 }
 
 int	free_all(t_coder **coders, t_input *input, t_dongle **dongles, int count)
@@ -97,7 +96,7 @@ int	main(int argc, char **argv)
 	t_coder		**coders;
 	t_input		*input;
 	t_dongle	**dongles;
-	long		start;
+	long long		start;
 
 	start = get_start_time();
 	if (argc != 9)
@@ -109,5 +108,10 @@ int	main(int argc, char **argv)
 	dongles = make_dongles(input->number_of_coders);
 	if (!dongles)
 		return (free_all(coders, input, NULL, input->number_of_coders));
+	// printf("coders: %d\n burn out: %d\n compile:%d\n debug: %d\n refactor:\
+	// 	%d\n times of compilations: %d\n dongle cooldown: %d",
+	// 	input->number_of_coders, input->time_to_burnout, input->time_to_compile,
+	// 	input->time_to_debug, input->time_to_refactor,
+	// 	input->number_of_compiles_required, input->dongle_cooldown);
 	return (make_threads(coders, dongles, input));
 }
