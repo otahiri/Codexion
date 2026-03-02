@@ -96,7 +96,7 @@ int	main(int argc, char **argv)
 	t_coder		**coders;
 	t_input		*input;
 	t_dongle	**dongles;
-	long long		start;
+	long long	start;
 
 	start = get_start_time();
 	if (argc != 9)
@@ -108,10 +108,5 @@ int	main(int argc, char **argv)
 	dongles = make_dongles(input->number_of_coders);
 	if (!dongles)
 		return (free_all(coders, input, NULL, input->number_of_coders));
-	// printf("coders: %d\n burn out: %d\n compile:%d\n debug: %d\n refactor:\
-	// 	%d\n times of compilations: %d\n dongle cooldown: %d",
-	// 	input->number_of_coders, input->time_to_burnout, input->time_to_compile,
-	// 	input->time_to_debug, input->time_to_refactor,
-	// 	input->number_of_compiles_required, input->dongle_cooldown);
 	return (make_threads(coders, dongles, input));
 }
