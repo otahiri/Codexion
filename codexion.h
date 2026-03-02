@@ -56,6 +56,6 @@ void				compile(t_coder *coder);
 void				debug(t_coder *coder);
 void				refactor(t_coder *coder);
 void				*run_coder(void *arg);
-long long			get_time(long long start);
+long				get_time(long start);
 
 #endif

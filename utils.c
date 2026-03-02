@@ -11,11 +11,11 @@
 /* ************************************************************************** */
 #include "codexion.h"
 
-long long	get_time(long long start)
+long	get_time(long start)
 {
 	struct timeval	tv;
 	struct timezone	tz;
 
 	gettimeofday(&tv, &tz);
-	return (tv.tv_usec + (tv.tv_sec * 1000000));
+	return ((tv.tv_sec * 1000) - start);
 }

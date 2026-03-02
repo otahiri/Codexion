@@ -17,7 +17,7 @@ void	compile(t_coder *coder)
 
 	input = coder->values;
 	printf("%ld %d is compiling\n", get_time(coder->start), coder->id);
-	usleep(input->time_to_compile);
+	usleep(input->time_to_compile * 1000);
 }
 
 void	debug(t_coder *coder)
@@ -26,7 +26,7 @@ void	debug(t_coder *coder)
 
 	input = coder->values;
 	printf("%ld %d is debuggin\n", get_time(coder->start), coder->id);
-	usleep(input->time_to_debug);
+	usleep(input->time_to_debug * 1000);
 }
 
 void	refactor(t_coder *coder)
@@ -35,7 +35,7 @@ void	refactor(t_coder *coder)
 
 	input = coder->values;
 	printf("%ld %d is refactoring\n", get_time(coder->start), coder->id);
-	usleep(input->time_to_refactor);
+	usleep(input->time_to_refactor * 1000);
 }
 
 void	*run_coder(void *arg)

@@ -10,18 +10,20 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
+#include <bits/pthreadtypes.h>
+#include <pthread.h>
 
 long	get_start_time(void)
 {
 	struct timeval	tv;
 
 	gettimeofday(&tv, NULL);
-	return (tv.tv_usec + (tv.tv_sec * 1000));
+	return (tv.tv_sec * 1000);
 }
 
 int	free_all(t_coder **coders, t_input *input, int count)
 {
-	int	i;
+	int				i;
 
 	i = 0;
 	if (input)
@@ -29,9 +31,13 @@ int	free_all(t_coder **coders, t_input *input, int count)
 	if (coders)
 	{
 		while (i < count)
+		{
+			pthread_mutex_destroy(&input->dongles[i]);
 			free(coders[i++]);
+		}
 		free(coders);
 	}
+	free(input->dongles);
 	return (0);
 }
 
