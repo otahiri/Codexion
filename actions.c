@@ -10,26 +10,31 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
-#include <pthread.h>
-#include <stdio.h>
 
 void	compile(t_coder *coder)
 {
-	t_input			*input;
-	long long		time;
-	pthread_cond_t	cond;
-
-	pthread_cond_init(&cond, NULL);
 	while (coder->left->cooldown > get_time(coder->start)
 		&& coder->right->cooldown > get_time(coder->start))
 		usleep(coder->left->cooldown * 1000);
-	pthread_mutex_lock(&coder->right->dongle);
-	printf("%d has taken a dongle\n", coder->id);
-	pthread_mutex_lock(&coder->left->dongle);
-	printf("%d has taken a dongle\n", coder->id);
-	input = coder->values;
-	time = get_time(coder->start);
-	printf("%lld %d is compiling\n", time, coder->id);
+	if (coder->id % 2)
+	{
+		pthread_mutex_lock(&coder->right->dongle);
+		printf("%lld %d has taken a dongle\n", get_time(coder->start),
+			coder->id);
+		pthread_mutex_lock(&coder->left->dongle);
+		printf("%lld %d has taken a dongle\n", get_time(coder->start),
+			coder->id);
+	}
+	else
+	{
+		pthread_mutex_lock(&coder->left->dongle);
+		printf("%lld %d has taken a dongle\n", get_time(coder->start),
+			coder->id);
+		pthread_mutex_lock(&coder->right->dongle);
+		printf("%lld %d has taken a dongle\n", get_time(coder->start),
+			coder->id);
+	}
+	printf("%lld %d is compiling\n", get_time(coder->start), coder->id);
 	usleep(coder->values->time_to_compile * 1000);
 	pthread_mutex_unlock(&coder->right->dongle);
 	pthread_mutex_unlock(&coder->left->dongle);
@@ -66,12 +71,12 @@ void	*run_coder(void *arg)
 
 	count = 0;
 	coder = (t_coder *)arg;
-	while (coder->done < coder->values->number_of_compiles_required)
+	while (coder->cycles < coder->values->number_of_compiles_required)
 	{
 		compile(coder);
 		refactor(coder);
 		debug(coder);
-		coder->done++;
+		coder->cycles++;
 	}
 	return (NULL);
 }

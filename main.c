@@ -11,14 +11,6 @@
 /* ************************************************************************** */
 #include "codexion.h"
 
-long long	get_start_time(void)
-{
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_usec / 1000) + (tv.tv_sec * 1000));
-}
-
 int	free_all(t_coder **coders, t_input *input, t_dongle **dongles, int count)
 {
 	int	i;
@@ -62,7 +54,8 @@ t_coder	**make_coder(long start, t_input *input)
 			free_all(coders, NULL, NULL, i);
 			return (NULL);
 		}
-		coders[i]->done = false;
+		coders[i]->last_compile = get_time(0);
+		coders[i]->cycles = 0;
 		coders[i]->id = i + 1;
 		coders[i]->start = start;
 		coders[i]->values = input;
@@ -98,10 +91,10 @@ int	main(int argc, char **argv)
 	t_dongle	**dongles;
 	long long	start;
 
-	start = get_start_time();
 	if (argc != 9)
 		return (1);
 	input = parse(argv);
+	start = get_time(0);
 	coders = make_coder(start, input);
 	if (!coders)
 		return (free_all(NULL, input, NULL, input->number_of_coders));

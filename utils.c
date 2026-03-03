@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
-#include <stdio.h>
 
 long long	get_time(long start)
 {
@@ -26,19 +25,25 @@ void	*burn_out(void *arg)
 	int		i;
 	int		limit;
 
-	i = 0;
 	coders = arg;
 	limit = coders[0]->values->number_of_coders;
 	while (1)
 	{
-		if (i == limit)
-			i = 0;
-		if (get_time(coders[i]->start) / (coders[i]->done + 1) >= limit)
+		i = 0;
+		while (i < limit)
 		{
-			printf("i + 1 burn out\n");
-			break ;
+			pthread_mutex_lock(&coders[i]->burnout);
+			if (get_time(0)
+				- coders[i]->last_compile > coders[i]->values->time_to_burnout)
+			{
+				pthread_mutex_unlock(&coders[i]->burnout);
+				printf("coder is dead\n");
+				return (NULL);
+			}
+			pthread_mutex_unlock(&coders[i]->burnout);
+			i++;
 		}
-		i++;
+		usleep(1000);
 	}
 	return (NULL);
 }

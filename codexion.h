@@ -51,7 +51,9 @@ typedef struct s_coder
 {
 	pthread_t		thread;
 	int				id;
-	int				done;
+	int				cycles;
+	long long		last_compile;
+	pthread_mutex_t	burnout;
 	t_input			*values;
 	long			start;
 	t_dongle		*left;
