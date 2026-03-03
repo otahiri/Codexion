@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 09:49:40 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/03/03 12:36:51 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/03 14:11:26 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,5 +71,7 @@ t_coder				**make_coder(long start, t_input *input);
 t_dongle			**make_dongles(int count);
 int					make_threads(t_coder **coders, t_dongle **dongles,
 						t_input *input);
+
+void				*burn_out(void *arg);
 
 #endif

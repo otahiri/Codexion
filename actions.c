@@ -6,10 +6,12 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 10:18:09 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/03/03 12:36:19 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/03 14:05:23 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
+#include <pthread.h>
+#include <stdio.h>
 
 void	compile(t_coder *coder)
 {
@@ -22,7 +24,9 @@ void	compile(t_coder *coder)
 		&& coder->right->cooldown > get_time(coder->start))
 		usleep(coder->left->cooldown * 1000);
 	pthread_mutex_lock(&coder->right->dongle);
+	printf("%d has taken a dongle\n", coder->id);
 	pthread_mutex_lock(&coder->left->dongle);
+	printf("%d has taken a dongle\n", coder->id);
 	input = coder->values;
 	time = get_time(coder->start);
 	printf("%lld %d is compiling\n", time, coder->id);
@@ -74,7 +78,8 @@ void	*run_coder(void *arg)
 
 int	make_threads(t_coder **coders, t_dongle **dongles, t_input *input)
 {
-	int	i;
+	int			i;
+	pthread_t	burn_timer;
 
 	i = 0;
 	while (i < input->number_of_coders)
@@ -92,5 +97,6 @@ int	make_threads(t_coder **coders, t_dongle **dongles, t_input *input)
 	i = 0;
 	while (i < input->number_of_coders)
 		pthread_join(coders[i++]->thread, NULL);
+	pthread_create(&burn_timer, NULL, burn_out, coders);
 	return (free_all(coders, input, dongles, input->number_of_coders));
 }
