@@ -6,11 +6,10 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 10:18:09 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/03/02 17:08:14 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/03 12:36:19 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
-#include <unistd.h>
 
 void	compile(t_coder *coder)
 {
@@ -30,6 +29,8 @@ void	compile(t_coder *coder)
 	usleep(coder->values->time_to_compile * 1000);
 	pthread_mutex_unlock(&coder->right->dongle);
 	pthread_mutex_unlock(&coder->left->dongle);
+	coder->left->cooldown = coder->values->dongle_cooldown;
+	coder->right->cooldown = coder->values->dongle_cooldown;
 }
 
 void	debug(t_coder *coder)
@@ -39,7 +40,7 @@ void	debug(t_coder *coder)
 
 	time = get_time(coder->start);
 	input = coder->values;
-	printf("%lld %d is debuggin\n", time, coder->id);
+	printf("%lld %d is debugging\n", time, coder->id);
 	usleep(input->time_to_debug * 1000);
 }
 
@@ -61,12 +62,12 @@ void	*run_coder(void *arg)
 
 	count = 0;
 	coder = (t_coder *)arg;
-	while (!coder->done)
+	while (coder->done < coder->values->number_of_compiles_required)
 	{
 		compile(coder);
 		refactor(coder);
 		debug(coder);
-		coder->done = 1;
+		coder->done++;
 	}
 	return (NULL);
 }
@@ -86,8 +87,10 @@ int	make_threads(t_coder **coders, t_dongle **dongles, t_input *input)
 	while (i < input->number_of_coders)
 	{
 		pthread_create(&coders[i]->thread, NULL, run_coder, coders[i]);
-		pthread_join(coders[i]->thread, NULL);
 		i++;
 	}
+	i = 0;
+	while (i < input->number_of_coders)
+		pthread_join(coders[i++]->thread, NULL);
 	return (free_all(coders, input, dongles, input->number_of_coders));
 }
