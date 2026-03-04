@@ -44,6 +44,7 @@ typedef struct s_dongle
 	pthread_mutex_t	dongle;
 	int				cooldown;
 	bool			in_use;
+	void			**heap;
 
 }					t_dongle;
 
@@ -76,5 +77,7 @@ int					make_threads(t_coder **coders, t_dongle **dongles,
 
 void				*burn_out(void *arg);
 void				lock_dongles(t_coder *coder);
+void				push_coder(t_dongle *dongle, t_coder *coder);
+void				pop_coder(t_dongle *dongle, int target);
 
 #endif

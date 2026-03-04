@@ -11,44 +11,27 @@
 /* ************************************************************************** */
 #include "codexion.h"
 
-t_coder	**push_coder(t_coder **coders, t_coder *new, int size)
+void	push_coder(t_dongle *dongle, t_coder *coder)
 {
-	t_coder	**res;
-	int		i;
-
-	res = malloc(sizeof(void *) * (size + 1));
-	i = 0;
-	while (i <= size)
-	{
-		res[i] = coders[i];
-		i++;
-	}
-	res[i] = new;
-	free(coders);
-	return (res);
+	if (!dongle->heap[1])
+		dongle->heap[1] = coder;
 }
 
-t_coder	**pop_coder(t_coder **coders, int size, int target)
+void	pop_coder(t_dongle *dongle, t_coder *coder)
 {
-	t_coder	**res;
-	int		i;
-	int		j;
+	int	target;
 
-	res = malloc(sizeof(void *) * (size - 1));
-	i = 0;
-	j = 0;
-	while (i < size)
+	target = 0;
+	while (target < 2)
 	{
-		if (i == target)
-		{
-			i++;
-			continue ;
-		}
-		res[j] = coders[i];
-		i++;
-		j++;
+		if ((t_coder *)(dongle->heap[target])->id == coder->id)
+			break;
+		target++;
 	}
-	free(coders[target]);
-	free(coders);
-	return (res);
+	dongle->heap[target] = NULL;
+	if (target == 0 && dongle->heap[1])
+	{
+		dongle->heap[0] = dongle->heap[1];
+		dongle->heap[1] = NULL;
+	}
 }

@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
+#include <stdlib.h>
 
 int	free_all(t_coder **coders, t_input *input, t_dongle **dongles, int count)
 {
@@ -77,6 +78,9 @@ t_dongle	**make_dongles(int count)
 		dongles[i] = malloc(sizeof(t_dongle));
 		dongles[i]->cooldown = 0;
 		dongles[i]->in_use = false;
+		dongles[i]->heap = malloc(sizeof(void *) * 2);
+		dongles[i]->heap[0] = NULL;
+		dongles[i]->heap[1] = NULL;
 		pthread_mutex_init(&dongles[i]->dongle, NULL);
 		i++;
 	}
