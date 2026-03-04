@@ -47,3 +47,25 @@ void	*burn_out(void *arg)
 	}
 	return (NULL);
 }
+
+void	lock_dongles(t_coder *coder)
+{
+	if (coder->id % 2)
+	{
+		pthread_mutex_lock(&coder->right->dongle);
+		printf("%lld %d has taken a dongle\n", get_time(coder->start),
+			coder->id);
+		pthread_mutex_lock(&coder->left->dongle);
+		printf("%lld %d has taken a dongle\n", get_time(coder->start),
+			coder->id);
+	}
+	else
+	{
+		pthread_mutex_lock(&coder->left->dongle);
+		printf("%lld %d has taken a dongle\n", get_time(coder->start),
+			coder->id);
+		pthread_mutex_lock(&coder->right->dongle);
+		printf("%lld %d has taken a dongle\n", get_time(coder->start),
+			coder->id);
+	}
+}

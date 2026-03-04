@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 12:33:42 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/03/03 12:36:46 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/04 14:13:08 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
@@ -35,7 +35,7 @@ int	free_all(t_coder **coders, t_input *input, t_dongle **dongles, int count)
 	return (0);
 }
 
-t_coder	**make_coder(long start, t_input *input)
+t_coder	**make_coder(t_input *input)
 {
 	t_coder	**coders;
 	int		i;
@@ -57,7 +57,6 @@ t_coder	**make_coder(long start, t_input *input)
 		coders[i]->last_compile = get_time(0);
 		coders[i]->cycles = 0;
 		coders[i]->id = i + 1;
-		coders[i]->start = start;
 		coders[i]->values = input;
 		i++;
 	}
@@ -89,17 +88,15 @@ int	main(int argc, char **argv)
 	t_coder		**coders;
 	t_input		*input;
 	t_dongle	**dongles;
-	long long	start;
 
 	if (argc != 9)
 		return (1);
 	input = parse(argv);
-	start = get_time(0);
-	coders = make_coder(start, input);
+	coders = make_coder(input);
 	if (!coders)
 		return (free_all(NULL, input, NULL, input->number_of_coders));
 	dongles = make_dongles(input->number_of_coders);
 	if (!dongles)
 		return (free_all(coders, input, NULL, input->number_of_coders));
-	return (make_threads(coders, dongles, input));
+	return (make_threads(coders, dongles, input, get_time(0)));
 }

@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 09:49:40 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/03/03 14:11:26 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/04 14:12:37 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,11 +69,12 @@ long long			get_time(long start);
 long long			get_start_time(void);
 int					free_all(t_coder **coders, t_input *input,
 						t_dongle **dongles, int count);
-t_coder				**make_coder(long start, t_input *input);
+t_coder				**make_coder(t_input *input);
 t_dongle			**make_dongles(int count);
 int					make_threads(t_coder **coders, t_dongle **dongles,
-						t_input *input);
+						t_input *input, long long start);
 
 void				*burn_out(void *arg);
+void				lock_dongles(t_coder *coder);
 
 #endif
