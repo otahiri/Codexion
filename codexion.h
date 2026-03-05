@@ -55,11 +55,13 @@ typedef struct s_coder
 	int				id;
 	int				cycles;
 	long long		last_compile;
+	long long		request_time;
 	pthread_mutex_t	burnout;
 	t_input			*values;
 	long			start;
 	t_dongle		*left;
 	t_dongle		*right;
+	int				priority;
 }					t_coder;
 
 t_input				*parse(char **argv);

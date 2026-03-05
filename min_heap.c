@@ -11,9 +11,46 @@
 /* ************************************************************************** */
 #include "codexion.h"
 
+static void	calculate_priority(t_dongle *dongle)
+{
+	int			i;
+	const char	*schedule;
+
+	schedule = dongle->heap[0]->values->scheduler;
+	i = 0;
+	while (i < dongle->heap_size)
+	{
+		dongle->heap[i]->priority = (dongle->heap[i]->request_time
+				- get_time(0)) * strcmp(schedule, "fifo");
+		dongle->heap[i]->priority = (dongle->heap[i]->last_compile
+				- get_time(0)) * strcmp(schedule, "edf");
+		i++;
+	}
+}
+
 static void	sort_heap(t_dongle *dongle)
 {
-	return ;
+	int		i;
+	int		j;
+	void	*tmp;
+
+	i = 0;
+	calculate_priority(dongle);
+	while (i < dongle->heap_size)
+	{
+		j = 0;
+		while (j < dongle->heap_size - 1)
+		{
+			if (dongle->heap[j]->priority > dongle->heap[j + 1]->priority)
+			{
+				tmp = dongle->heap[j];
+				dongle->heap[j] = dongle->heap[j + 1];
+				dongle->heap[j + 1] = tmp;
+			}
+			j++;
+		}
+		i++;
+	}
 }
 
 void	push_coder(t_dongle *dongle, t_coder *coder)
