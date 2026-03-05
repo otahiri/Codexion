@@ -11,27 +11,26 @@
 /* ************************************************************************** */
 #include "codexion.h"
 
-void	push_coder(t_dongle *dongle, t_coder *coder)
+static void	sort_heap(t_dongle *dongle)
 {
-	if (!dongle->heap[1])
-		dongle->heap[1] = coder;
+	return ;
 }
 
-void	pop_coder(t_dongle *dongle, t_coder *coder)
+void	push_coder(t_dongle *dongle, t_coder *coder)
 {
-	int	target;
+	if (!dongle->heap_size)
+		return ;
+	if (!dongle->heap[dongle->heap_size - 1])
+		dongle->heap[dongle->heap_size - 1] = coder;
+}
 
-	target = 0;
-	while (target < 2)
-	{
-		if ((t_coder *)(dongle->heap[target])->id == coder->id)
-			break;
-		target++;
-	}
-	dongle->heap[target] = NULL;
-	if (target == 0 && dongle->heap[1])
-	{
-		dongle->heap[0] = dongle->heap[1];
-		dongle->heap[1] = NULL;
-	}
+void	pop_coder(t_dongle *dongle)
+{
+	if (!dongle->heap_size)
+		return ;
+	dongle->heap[0] = dongle->heap[dongle->heap_size - 1];
+	dongle->heap[dongle->heap_size - 1] = NULL;
+	dongle->heap_size--;
+	if (dongle->heap_size > 1)
+		sort_heap(dongle);
 }

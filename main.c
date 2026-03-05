@@ -82,6 +82,7 @@ t_dongle	**make_dongles(int count)
 		dongles[i]->heap[0] = NULL;
 		dongles[i]->heap[1] = NULL;
 		pthread_mutex_init(&dongles[i]->dongle, NULL);
+		dongles[i]->heap_size = 0;
 		i++;
 	}
 	return (dongles);
