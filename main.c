@@ -30,9 +30,7 @@ int	free_all(t_coder **coders, t_input *input, t_dongle **dongles, int count)
 	if (coders)
 	{
 		while (i < count)
-		{
 			free(coders[i++]);
-		}
 		free(coders);
 	}
 	return (0);
