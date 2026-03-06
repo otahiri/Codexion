@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 09:49:40 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/03/04 14:12:37 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/06 12:13:16 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ typedef struct s_dongle
 	bool			in_use;
 	void			**heap;
 	int				heap_size;
-
+	pthread_cond_t	cond_var;
 }					t_dongle;
 
 typedef struct s_coder
@@ -77,10 +77,10 @@ t_coder				**make_coder(t_input *input);
 t_dongle			**make_dongles(int count);
 int					make_threads(t_coder **coders, t_dongle **dongles,
 						t_input *input, long long start);
-
 void				*burn_out(void *arg);
 void				lock_dongles(t_coder *coder);
 void				push_coder(t_dongle *dongle, t_coder *coder);
 void				pop_coder(t_dongle *dongle);
+t_coder				*peak_top(t_dongle *dongle);
 
 #endif

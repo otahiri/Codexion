@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/04 13:27:15 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/03/04 14:10:39 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/06 13:03:33 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
@@ -21,9 +21,9 @@ static void	calculate_priority(t_dongle *dongle)
 	while (i < dongle->heap_size)
 	{
 		dongle->heap[i]->priority = (dongle->heap[i]->request_time
-				- get_time(0)) * strcmp(schedule, "fifo");
+				- get_time(0)) * !strcmp(schedule, "fifo");
 		dongle->heap[i]->priority = (dongle->heap[i]->last_compile
-				- get_time(0)) * strcmp(schedule, "edf");
+				- get_time(0)) * !strcmp(schedule, "edf");
 		i++;
 	}
 }
@@ -70,4 +70,9 @@ void	pop_coder(t_dongle *dongle)
 	dongle->heap_size--;
 	if (dongle->heap_size > 1)
 		sort_heap(dongle);
+}
+
+t_coder	*peak_top(t_dongle *dongle)
+{
+	return (dongle->heap[0]);
 }

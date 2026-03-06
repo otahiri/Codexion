@@ -6,11 +6,11 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/23 12:33:42 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/03/04 14:13:08 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/06 12:57:23 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
-#include <stdlib.h>
+#include <pthread.h>
 
 int	free_all(t_coder **coders, t_input *input, t_dongle **dongles, int count)
 {
@@ -22,7 +22,10 @@ int	free_all(t_coder **coders, t_input *input, t_dongle **dongles, int count)
 	if (dongles)
 	{
 		while (i < count)
+		{
 			pthread_mutex_destroy(&dongles[i++]->dongle);
+			pthread_cond_destroy(&dongles[i++]->cond_var);
+		}
 		free(dongles);
 	}
 	if (coders)
@@ -83,6 +86,7 @@ t_dongle	**make_dongles(int count)
 		dongles[i]->heap[1] = NULL;
 		pthread_mutex_init(&dongles[i]->dongle, NULL);
 		dongles[i]->heap_size = 0;
+		pthread_cond_init(&dongles[i]->cond_var, NULL);
 		i++;
 	}
 	return (dongles);

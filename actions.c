@@ -6,17 +6,15 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 10:18:09 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/03/04 14:15:02 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/06 13:03:35 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
+#include <pthread.h>
 
 void	compile(t_coder *coder)
 {
-	while (coder->left->cooldown > get_time(coder->start)
-		&& coder->right->cooldown > get_time(coder->start))
-		usleep(coder->left->cooldown * 1000);
-	lock_dongles(coder);
+	aquiew(coder);
 	printf("%lld %d is compiling\n", get_time(coder->start), coder->id);
 	usleep(coder->values->time_to_compile * 1000);
 	pthread_mutex_unlock(&coder->right->dongle);

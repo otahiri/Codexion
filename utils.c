@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 11:57:47 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/03/03 14:24:41 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/06 12:13:37 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
@@ -46,26 +46,4 @@ void	*burn_out(void *arg)
 		usleep(1000);
 	}
 	return (NULL);
-}
-
-void	lock_dongles(t_coder *coder)
-{
-	if (coder->id % 2)
-	{
-		pthread_mutex_lock(&coder->right->dongle);
-		printf("%lld %d has taken a dongle\n", get_time(coder->start),
-			coder->id);
-		pthread_mutex_lock(&coder->left->dongle);
-		printf("%lld %d has taken a dongle\n", get_time(coder->start),
-			coder->id);
-	}
-	else
-	{
-		pthread_mutex_lock(&coder->left->dongle);
-		printf("%lld %d has taken a dongle\n", get_time(coder->start),
-			coder->id);
-		pthread_mutex_lock(&coder->right->dongle);
-		printf("%lld %d has taken a dongle\n", get_time(coder->start),
-			coder->id);
-	}
 }
