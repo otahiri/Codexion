@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
-#include <pthread.h>
 
 void	compile(t_coder *coder)
 {
@@ -66,8 +65,10 @@ int	make_threads(t_coder **coders, t_dongle **dongles, t_input *input,
 {
 	int			i;
 	pthread_t	burn_timer;
+	void		*burn_sign;
 
 	i = 0;
+
 	while (i < input->number_of_coders)
 	{
 		coders[i]->left = dongles[i];
@@ -81,9 +82,11 @@ int	make_threads(t_coder **coders, t_dongle **dongles, t_input *input,
 		pthread_create(&coders[i]->thread, NULL, run_coder, coders[i]);
 		i++;
 	}
+	pthread_create(&burn_timer, burn_sign, burn_out, coders);
+	if (!burn_sign)
+		return (free_all(coders, input, dongles, input->number_of_coders));
 	i = 0;
 	while (i < input->number_of_coders)
 		pthread_join(coders[i++]->thread, NULL);
-	pthread_create(&burn_timer, NULL, burn_out, coders);
 	return (free_all(coders, input, dongles, input->number_of_coders));
 }

@@ -62,4 +62,5 @@ void	release_dongles(t_coder *coder)
 	pthread_mutex_unlock(&coder->left->dongle);
 	pthread_cond_broadcast(&coder->left->cond_var);
 	pthread_cond_broadcast(&coder->right->cond_var);
+	coder->last_compile = get_time(coder->start);
 }
