@@ -59,6 +59,7 @@ void	push_coder(t_dongle *dongle, t_coder *coder)
 		return ;
 	if (!dongle->heap[dongle->heap_size - 1])
 		dongle->heap[dongle->heap_size - 1] = coder;
+	sort_heap(dongle);
 }
 
 void	pop_coder(t_dongle *dongle)

@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
-#include <pthread.h>
 
 int	free_all(t_coder **coders, t_input *input, t_dongle **dongles, int count)
 {
@@ -23,7 +22,7 @@ int	free_all(t_coder **coders, t_input *input, t_dongle **dongles, int count)
 	{
 		while (i < count)
 		{
-			pthread_mutex_destroy(&dongles[i++]->dongle);
+			pthread_mutex_destroy(&dongles[i]->dongle);
 			pthread_cond_destroy(&dongles[i++]->cond_var);
 		}
 		free(dongles);
@@ -85,8 +84,8 @@ t_dongle	**make_dongles(int count)
 		dongles[i]->heap[0] = NULL;
 		dongles[i]->heap[1] = NULL;
 		pthread_mutex_init(&dongles[i]->dongle, NULL);
-		dongles[i]->heap_size = 0;
 		pthread_cond_init(&dongles[i]->cond_var, NULL);
+		dongles[i]->heap_size = 0;
 		i++;
 	}
 	return (dongles);

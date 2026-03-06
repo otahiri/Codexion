@@ -14,11 +14,10 @@
 
 void	compile(t_coder *coder)
 {
-	aquiew(coder);
+	aquire_dongles(coder);
 	printf("%lld %d is compiling\n", get_time(coder->start), coder->id);
 	usleep(coder->values->time_to_compile * 1000);
-	pthread_mutex_unlock(&coder->right->dongle);
-	pthread_mutex_unlock(&coder->left->dongle);
+	release_dongles(coder);
 	coder->left->cooldown = coder->values->dongle_cooldown;
 	coder->right->cooldown = coder->values->dongle_cooldown;
 }

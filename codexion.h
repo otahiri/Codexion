@@ -20,6 +20,8 @@
 # include <sys/time.h>
 # include <unistd.h>
 
+struct	s_coder;
+
 typedef enum s_stage
 {
 	COMPILING,
@@ -44,7 +46,7 @@ typedef struct s_dongle
 	pthread_mutex_t	dongle;
 	int				cooldown;
 	bool			in_use;
-	void			**heap;
+	struct s_coder	**heap;
 	int				heap_size;
 	pthread_cond_t	cond_var;
 }					t_dongle;
@@ -82,5 +84,9 @@ void				lock_dongles(t_coder *coder);
 void				push_coder(t_dongle *dongle, t_coder *coder);
 void				pop_coder(t_dongle *dongle);
 t_coder				*peak_top(t_dongle *dongle);
+void				pop_coder(t_dongle *dongle);
+t_coder				*peak_top(t_dongle *dongle);
+void				aquire_dongles(t_coder *coder);
+void				release_dongles(t_coder *coder);
 
 #endif

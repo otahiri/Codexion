@@ -10,7 +10,7 @@ CFLAGS = -Wall -Werror -Wextra -g
 all = $(NAME)
 
 
-SRCS = actions.c main.c parsing.c utils.c
+SRCS = actions.c dongle_actions.c main.c min_heap.c parsing.c utils.c
 
 
 OBJ = $(SRCS:.c=.o)

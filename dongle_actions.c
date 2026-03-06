@@ -6,13 +6,28 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 12:24:31 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/03/06 13:03:23 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/03/06 13:01:55 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <pthread.h>
 
 void	aquire_dongles(t_coder *coder)
+{
+	push_coder(coder->left, coder);
+	push_coder(coder->right, coder);
+	if (coder->id == peak_top(coder->left)->id
+		&& coder->id == peak_top(coder->right)->id)
+		lock_dongles(coder);
+	else
+	{
+		pthread_cond_wait(&coder->left->cond_var, &coder->left->dongle);
+		pthread_cond_wait(&coder->right->cond_var, &coder->right->dongle);
+	}
+}
+
+void	lock_dongles(t_coder *coder)
 {
 	if (coder->id % 2)
 	{
