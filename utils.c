@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
+#include <bits/pthreadtypes.h>
+#include <pthread.h>
 #include <stdio.h>
 
 long long	get_time(long start)
@@ -22,9 +24,15 @@ long long	get_time(long start)
 
 void	*ret(t_coder *coder)
 {
+	pthread_mutex_t	stop_sign;
+
+	pthread_mutex_init(&stop_sign, NULL);
+	pthread_mutex_lock(&stop_sign);
 	pthread_mutex_unlock(&coder->burnout);
+	coder->values->stop = 1;
 	printf("%lld %d burned out\n", get_time(coder->start), coder->id);
-	return (NULL);
+	pthread_mutex_unlock(&stop_sign);
+	return ((void *)0);
 }
 
 void	*burn_out(void *arg)
@@ -49,5 +57,5 @@ void	*burn_out(void *arg)
 			i++;
 		}
 	}
-	return (NULL);
+	return ((void *)1);
 }

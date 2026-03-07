@@ -81,5 +81,6 @@ t_input	*parse(char **argv)
 	input->number_of_compiles_required = ft_atoi(argv[6]);
 	input->dongle_cooldown = ft_atoi(argv[7]);
 	input->scheduler = argv[8];
+	input->stop = 0;
 	return (ft_valid(&input));
 }

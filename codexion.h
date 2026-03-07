@@ -39,6 +39,7 @@ typedef struct s_input
 	int				number_of_compiles_required;
 	int				dongle_cooldown;
 	const char		*scheduler;
+	int				stop;
 }					t_input;
 
 typedef struct s_dongle
