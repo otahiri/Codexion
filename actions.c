@@ -86,13 +86,12 @@ int	make_threads(t_coder **coders, t_dongle **dongles, t_input *input,
 {
 	int			i;
 	pthread_t	burn_timer;
-	void		*burn_sign;
 
 	i = 0;
 	make_coders(coders, dongles, start);
 	pthread_create(&burn_timer, NULL, burn_out, coders);
-	pthread_join(burn_timer, &burn_sign);
-	if (!(long)burn_sign)
+	pthread_join(burn_timer, NULL);
+	if (coders[0]->values->stop)
 		return (free_all(coders, input, dongles, input->number_of_coders));
 	while (i < input->number_of_coders)
 		pthread_join(coders[i++]->thread, NULL);

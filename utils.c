@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
+#include <unistd.h>
 
 long long	get_time(long start)
 {
@@ -29,15 +30,14 @@ void	*ret(t_coder *coder)
 	coder->values->stop = 1;
 	printf("%lld %d burned out\n", get_time(coder->start), coder->id);
 	pthread_mutex_unlock(&stop_sign);
-	return ((void *)0);
+	return (NULL);
 }
 
 void	*burn_out(void *arg)
 {
-	t_coder		**coders;
-	int			i;
-	long long	time;
-	t_input		*input;
+	t_coder	**coders;
+	int		i;
+	t_input	*input;
 
 	coders = arg;
 	input = coders[0]->values;
@@ -47,17 +47,18 @@ void	*burn_out(void *arg)
 		while (i < input->number_of_coders)
 		{
 			pthread_mutex_lock(&input->burnout);
-			time = get_time(coders[i]->last_compile);
-			if (coders[i]->cycles < input->number_of_compiles_required)
+			if (coders[i]->cycles < input->number_of_compiles_required
+				&& get_time(coders[i]->last_compile) > input->time_to_burnout)
 			{
-				if (time > coders[i]->values->time_to_burnout)
-					return (ret(coders[i]));
+				pthread_mutex_unlock(&input->burnout);
+				return (ret(coders[i]));
 			}
 			pthread_mutex_unlock(&input->burnout);
 			i++;
 		}
+		usleep(1000);
 	}
-	return ((void *)1);
+	return (NULL);
 }
 
 void	make_coders(t_coder **coders, t_dongle **dongles, long long start)
