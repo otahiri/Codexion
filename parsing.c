@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
+#include <pthread.h>
 
 static int	ft_isdigit(char *str)
 {
@@ -82,5 +83,6 @@ t_input	*parse(char **argv)
 	input->dongle_cooldown = ft_atoi(argv[7]);
 	input->scheduler = argv[8];
 	input->stop = 0;
+	pthread_mutex_init(&input->burnout, NULL);
 	return (ft_valid(&input));
 }

@@ -40,6 +40,7 @@ typedef struct s_input
 	int				dongle_cooldown;
 	const char		*scheduler;
 	int				stop;
+	pthread_mutex_t	burnout;
 }					t_input;
 
 typedef struct s_dongle
@@ -59,7 +60,6 @@ typedef struct s_coder
 	int				cycles;
 	long long		last_compile;
 	long long		request_time;
-	pthread_mutex_t	burnout;
 	t_input			*values;
 	long			start;
 	t_dongle		*left;
@@ -89,5 +89,7 @@ void				pop_coder(t_dongle *dongle);
 t_coder				*peak_top(t_dongle *dongle);
 void				aquire_dongles(t_coder *coder);
 void				release_dongles(t_coder *coder);
+void				make_coders(t_coder **coders, t_dongle **dongles,
+						long long start);
 
 #endif

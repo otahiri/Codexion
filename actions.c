@@ -13,8 +13,13 @@
 
 void	compile(t_coder *coder)
 {
+	pthread_mutex_lock(&coder->values->burnout);
 	if (coder->values->stop)
+	{
+		pthread_mutex_unlock(&coder->values->burnout);
 		return ;
+	}
+	pthread_mutex_unlock(&coder->values->burnout);
 	aquire_dongles(coder);
 	printf("%lld %d is compiling\n", get_time(coder->start), coder->id);
 	usleep(coder->values->time_to_compile * 1000);
@@ -28,8 +33,13 @@ void	debug(t_coder *coder)
 	t_input		*input;
 	long long	time;
 
+	pthread_mutex_lock(&coder->values->burnout);
 	if (coder->values->stop)
+	{
+		pthread_mutex_unlock(&coder->values->burnout);
 		return ;
+	}
+	pthread_mutex_unlock(&coder->values->burnout);
 	time = get_time(coder->start);
 	input = coder->values;
 	printf("%lld %d is debugging\n", time, coder->id);
@@ -41,8 +51,13 @@ void	refactor(t_coder *coder)
 	t_input		*input;
 	long long	time;
 
+	pthread_mutex_lock(&coder->values->burnout);
 	if (coder->values->stop)
+	{
+		pthread_mutex_unlock(&coder->values->burnout);
 		return ;
+	}
+	pthread_mutex_unlock(&coder->values->burnout);
 	time = get_time(coder->start);
 	input = coder->values;
 	printf("%lld %d is refactoring\n", get_time(coder->start), coder->id);
@@ -74,26 +89,11 @@ int	make_threads(t_coder **coders, t_dongle **dongles, t_input *input,
 	void		*burn_sign;
 
 	i = 0;
-	while (i < input->number_of_coders)
-	{
-		coders[i]->left = dongles[i];
-		coders[i]->right = dongles[(i + 1) % input->number_of_coders];
-		i++;
-	}
-	i = 0;
-	while (i < input->number_of_coders)
-	{
-		coders[i]->start = start;
-		pthread_create(&coders[i]->thread, NULL, run_coder, coders[i]);
-		i++;
-	}
+	make_coders(coders, dongles, start);
 	pthread_create(&burn_timer, NULL, burn_out, coders);
 	pthread_join(burn_timer, &burn_sign);
 	if (!(long)burn_sign)
-	{
 		return (free_all(coders, input, dongles, input->number_of_coders));
-	}
-	i = 0;
 	while (i < input->number_of_coders)
 		pthread_join(coders[i++]->thread, NULL);
 	return (free_all(coders, input, dongles, input->number_of_coders));
