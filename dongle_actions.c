@@ -11,16 +11,18 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <stdio.h>
 
 void	aquire_dongles(t_coder *coder)
 {
 	t_coder	*coder_a;
 	t_coder	*coder_b;
 
-	coder_a = peak_top(coder->left);
-	coder_b = peak_top(coder->right);
 	push_coder(coder->left, coder);
 	push_coder(coder->right, coder);
+	coder_a = peak_top(coder->left);
+	coder_b = peak_top(coder->right);
+	printf("%d, %d\n", coder_a->id, coder_b->id);
 	if (!coder_a || !coder_b)
 		return ;
 	if (coder->id == coder_a->id && coder->id == coder_b->id)

@@ -55,7 +55,6 @@ t_coder	**make_coder(t_input *input)
 			free_all(coders, NULL, NULL, i);
 			return (NULL);
 		}
-		coders[i]->last_compile = get_time(0);
 		coders[i]->cycles = 0;
 		coders[i]->id = i + 1;
 		coders[i]->values = input;

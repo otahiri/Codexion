@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
-#include <unistd.h>
 
 long long	get_time(long start)
 {
@@ -33,29 +32,43 @@ void	*ret(t_coder *coder)
 	return (NULL);
 }
 
+int	check_burnout(t_coder *coder)
+{
+	t_input	*input;
+
+	input = coder->values;
+	if (coder->last_compile != -1
+		&& get_time(coder->last_compile) > input->time_to_burnout)
+	{
+		pthread_mutex_unlock(&input->burnout);
+		return (1);
+	}
+	return (0);
+}
+
 void	*burn_out(void *arg)
 {
 	t_coder	**coders;
 	int		i;
-	t_input	*input;
+	int		count;
 
 	coders = arg;
-	input = coders[0]->values;
 	while (1)
 	{
+		count = 0;
 		i = 0;
-		while (i < input->number_of_coders)
+		while (i < coders[0]->values->number_of_coders)
 		{
-			pthread_mutex_lock(&input->burnout);
-			if (coders[i]->cycles < input->number_of_compiles_required
-				&& get_time(coders[i]->last_compile) > input->time_to_burnout)
-			{
-				pthread_mutex_unlock(&input->burnout);
+			pthread_mutex_lock(&coders[0]->values->burnout);
+			if (coders[i]->cycles < coders[0]->values->number_of_compiles_required)
+				count++;
+			if (check_burnout(coders[i]))
 				return (ret(coders[i]));
-			}
-			pthread_mutex_unlock(&input->burnout);
+			pthread_mutex_unlock(&coders[0]->values->burnout);
 			i++;
 		}
+		if (count == coders[0]->values->number_of_coders)
+			return (NULL);
 		usleep(1000);
 	}
 	return (NULL);
@@ -72,12 +85,8 @@ void	make_coders(t_coder **coders, t_dongle **dongles, long long start)
 	{
 		coders[i]->left = dongles[i];
 		coders[i]->right = dongles[(i + 1) % input->number_of_coders];
-		i++;
-	}
-	i = 0;
-	while (i < input->number_of_coders)
-	{
 		coders[i]->start = start;
+		coders[i]->last_compile = start;
 		pthread_create(&coders[i]->thread, NULL, run_coder, coders[i]);
 		i++;
 	}

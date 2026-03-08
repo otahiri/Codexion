@@ -13,17 +13,17 @@
 
 static void	calculate_priority(t_dongle *dongle)
 {
-	int			i;
+	int	i;
 
 	i = 0;
 	while (i < dongle->heap_size)
 	{
-		dongle->heap[i]->priority = (dongle->heap[i]->request_time
-				- get_time(0)) * !strcmp(dongle->heap[i]->values->scheduler,
-				"fifo");
-		dongle->heap[i]->priority = (dongle->heap[i]->last_compile
-				- get_time(0)) * !strcmp(dongle->heap[i]->values->scheduler,
-				"edf");
+		if (!strcmp(dongle->heap[i]->values->scheduler, "fifo"))
+			dongle->heap[i]->priority = (dongle->heap[i]->request_time
+					- get_time(0));
+		if (!strcmp(dongle->heap[i]->values->scheduler, "edf"))
+			dongle->heap[i]->priority = (dongle->heap[i]->last_compile
+					- get_time(0));
 		i++;
 	}
 }
@@ -55,8 +55,8 @@ static void	sort_heap(t_dongle *dongle)
 
 void	push_coder(t_dongle *dongle, t_coder *coder)
 {
-	if (!dongle->heap[dongle->heap_size - 1])
-		dongle->heap[dongle->heap_size - 1] = coder;
+	dongle->heap[dongle->heap_size] = coder;
+	dongle->heap_size++;
 	sort_heap(dongle);
 }
 

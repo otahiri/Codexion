@@ -13,6 +13,7 @@
 
 void	compile(t_coder *coder)
 {
+	coder->last_compile = -1;
 	pthread_mutex_lock(&coder->values->burnout);
 	if (coder->values->stop)
 	{
