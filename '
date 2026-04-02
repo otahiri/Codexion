@@ -19,27 +19,14 @@ int	is_space(char c)
 	return (0);
 }
 
-int	ft_isdigit(char *c)
+int	ft_atoi(char *num)
 {
-	return (*c <= 9 && *c >= 0);
-}
-
-int	ft_atoi(char num)
-{
-	int	sign;
-	int	res;
-	int	digit;
-
-	res = 0;
-	sign = 1;
 	while (*num && is_space(*num))
 		num++;
-	if (*num == '-' || *num == '+')
-		num++;
-	while (*num && ft_isdigit(*num))
+
+	while (*num)
 	{
-		digit = (*num + '0')
-		
+
 		num++;
 	}
 }
