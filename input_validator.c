@@ -1,32 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_atoi.c                                          :+:      :+:    :+:   */
+/*   input_validator.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/02 13:10:50 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/02 13:22:43 by otahiri-         ###   ########.fr       */
+/*   Created: 2026/04/02 18:55:04 by otahiri-          #+#    #+#             */
+/*   Updated: 2026/04/02 18:59:02 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-int	is_space(char c)
+int	is_valid_number(char *num)
 {
-	if (c == ' ' || (c >= 9 && c <= 13))
-		return (1);
-	return (0);
-}
-
-int	ft_atoi(char *num)
-{
-	while (*num && is_space(*num))
-		num++;
-
 	while (*num)
 	{
-
+		if (!ft_isdigit(*num))
+			return (0);
 		num++;
 	}
+	return (1);
 }
