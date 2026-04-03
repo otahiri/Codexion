@@ -36,9 +36,12 @@ typedef struct s_input
 
 struct					s_coder
 {
+	int					id;
 	int					compile_count;
-	t_input				input;
+	t_input				*input;
 	pthread_t			coder_thread;
+	t_dongle			*left;
+	t_dongle			*right;
 };
 
 struct					s_mutex
@@ -49,7 +52,7 @@ struct					s_mutex
 
 struct					s_dongle
 {
-	t_mutex				lock;
+	t_mutex				*lock;
 	long				cooldown;
 };
 

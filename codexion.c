@@ -11,9 +11,20 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <stdlib.h>
 
-t_coder	**initialize_coders(t_input *input)
+static t_dongle	*create_dongle(t_input *input)
+{
+	t_dongle	*dongle;
+
+	dongle = malloc(sizeof(t_dongle));
+	dongle->cooldown = 0;
+	dongle->lock = malloc(sizeof(t_mutex));
+	pthread_mutex_init(&dongle->lock->mutex, NULL);
+	pthread_cond_init(&dongle->lock->cond, NULL);
+	return (dongle);
+}
+
+static t_coder	**initialize_coders(t_input *input)
 {
 	t_coder	**coders;
 	int		i;
@@ -23,6 +34,16 @@ t_coder	**initialize_coders(t_input *input)
 	while (i < input->coders_count)
 	{
 		coders[i] = malloc(sizeof(t_coder));
+		coders[i]->id = i + 1;
+		coders[i]->input = input;
+		coders[i]->compile_count = 0;
+		coders[i]->right = create_dongle(input);
+		i++;
+	}
+	i = 0;
+	while (i < input->coders_count)
+	{
+		coders[i]->left = coders[i % input->coders_count]->right;
 		i++;
 	}
 	return (coders);
@@ -38,5 +59,6 @@ int	main(int argc, char *argv[])
 	input = parse_input(argv);
 	if (!input)
 		return (0);
+	coders = initialize_coders(input);
 	return (0);
 }
