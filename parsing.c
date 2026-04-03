@@ -16,14 +16,14 @@ static int	validate_args(char **argv)
 {
 	int	i;
 
-	i = 0;
+	i = 1;
 	while (i < 8)
 	{
-		if (!ft_isdigit(argv[i]))
+		if (!is_valid_number(argv[i]))
 			return (0);
 		i++;
 	}
-	if (strcmp("fifo", argv[8]) || strcmp("edf", argv[8]))
+	if (!(strcmp("fifo", argv[8]) || strcmp("edf", argv[8])))
 		return (0);
 	return (1);
 }
@@ -33,7 +33,7 @@ static int	is_input_valid(t_input *input)
 	if (input->coders_count < 0 || input->time_to_burnout < 0
 		|| input->time_to_compile < 0 || input->time_to_debug < 0
 		|| input->time_to_refactor < 0 || input->compile_count < 0
-		|| input->dongle_cooldown)
+		|| input->dongle_cooldown < 0)
 		return (0);
 	return (1);
 }

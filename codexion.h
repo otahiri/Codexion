@@ -45,5 +45,6 @@ int						is_space(char c);
 int						ft_isdigit(char c);
 t_input					*parse_input(char **argv);
 int						ft_isdigit(char c);
+int						is_valid_number(char *num);
 
 #endif

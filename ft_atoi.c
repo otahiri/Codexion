@@ -19,7 +19,7 @@ int	is_space(char c)
 
 int	ft_isdigit(char c)
 {
-	return (c <= 9 && c >= 0);
+	return (c <= '9' && c >= '0');
 }
 
 int	ft_atoi(char *num)
@@ -37,7 +37,7 @@ int	ft_atoi(char *num)
 	while (*num && ft_isdigit(*num))
 	{
 		digit = (*num - '0');
-		if (res + digit < res)
+		if (res + digit < 0)
 			return (-1);
 		res = (res * 10) + digit;
 		num++;
