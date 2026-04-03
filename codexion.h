@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/02 11:03:26 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/02 18:53:59 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/03 14:53:38 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,5 +62,6 @@ int						ft_isdigit(char c);
 t_input					*parse_input(char **argv);
 int						ft_isdigit(char c);
 int						is_valid_number(char *num);
+void					run_coders(t_coder **coders, t_input *input);
 
 #endif
