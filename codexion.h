@@ -13,13 +13,14 @@
 #ifndef CODEXION_H
 # define CODEXION_H
 
-# include "stdlib.h"
 # include <pthread.h>
 # include <stdio.h>
+# include <stdlib.h>
 # include <string.h>
 
 typedef struct s_coder	t_coder;
 typedef struct s_dongle	t_dongle;
+typedef struct s_mutex	t_mutex;
 
 typedef struct s_input
 {
@@ -38,6 +39,18 @@ struct					s_coder
 	int					compile_count;
 	t_input				input;
 	pthread_t			coder_thread;
+};
+
+struct					s_mutex
+{
+	pthread_mutex_t		mutex;
+	pthread_cond_t		cond;
+};
+
+struct					s_dongle
+{
+	t_mutex				lock;
+	long				cooldown;
 };
 
 int						ft_atoi(char *num);
