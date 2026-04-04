@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/02 11:06:00 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/04 09:21:15 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/04 10:09:23 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ int	main(int argc, char *argv[])
 	if (!input)
 		return (0);
 	coders = initialize_coders(input);
+	input->start = get_time(0);
 	run_coders(coders, input);
 	return (0);
 }
