@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/02 11:03:26 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/03 14:53:38 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/04 09:48:52 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,9 @@
 # include <pthread.h>
 # include <stdio.h>
 # include <stdlib.h>
-# include <unistd.h>
 # include <string.h>
+# include <sys/time.h>
+# include <unistd.h>
 
 typedef struct s_coder	t_coder;
 typedef struct s_dongle	t_dongle;
@@ -33,6 +34,7 @@ typedef struct s_input
 	int					compile_count;
 	int					dongle_cooldown;
 	char				*scheduler;
+	long				start;
 }						t_input;
 
 struct					s_coder
@@ -66,5 +68,9 @@ int						ft_isdigit(char c);
 int						is_valid_number(char *num);
 void					run_coders(t_coder **coders, t_input *input);
 void					*run_stages(void *args);
+void					compile(t_coder *coder);
+void					refactor(t_coder *coder);
+void					debug(t_coder *coder);
+long					get_time(long time_stamp);
 
 #endif
