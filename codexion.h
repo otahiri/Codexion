@@ -16,6 +16,7 @@
 # include <pthread.h>
 # include <stdio.h>
 # include <stdlib.h>
+# include <unistd.h>
 # include <string.h>
 
 typedef struct s_coder	t_coder;
@@ -54,6 +55,7 @@ struct					s_dongle
 {
 	t_mutex				*lock;
 	long				cooldown;
+	long				down_time;
 };
 
 int						ft_atoi(char *num);
@@ -63,5 +65,6 @@ t_input					*parse_input(char **argv);
 int						ft_isdigit(char c);
 int						is_valid_number(char *num);
 void					run_coders(t_coder **coders, t_input *input);
+void					*run_stages(void *args);
 
 #endif
