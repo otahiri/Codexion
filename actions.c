@@ -6,11 +6,13 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 08:14:36 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/04 10:04:35 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/04 11:45:27 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <pthread.h>
+#include <unistd.h>
 
 long	get_time(long time_stamp)
 {
