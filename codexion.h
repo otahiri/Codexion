@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/02 11:03:26 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/04 09:48:52 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/06 12:05:15 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 typedef struct s_coder	t_coder;
 typedef struct s_dongle	t_dongle;
 typedef struct s_mutex	t_mutex;
+typedef struct s_heap	t_heap;
 
 typedef struct s_input
 {
@@ -45,6 +46,8 @@ struct					s_coder
 	pthread_t			coder_thread;
 	t_dongle			*left;
 	t_dongle			*right;
+	long				last_compile;
+	long				request;
 };
 
 struct					s_mutex
@@ -56,8 +59,17 @@ struct					s_mutex
 struct					s_dongle
 {
 	t_mutex				*lock;
+	t_heap				*heap;
 	long				cooldown;
 	long				down_time;
+	long				next_availabe;
+};
+
+struct					s_heap
+{
+	t_coder				*coders;
+	int					heap_size;
+	int					heap_cap;
 };
 
 int						ft_atoi(char *num);
