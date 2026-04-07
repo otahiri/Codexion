@@ -12,7 +12,7 @@
 
 #include "codexion.h"
 
-int	compare_coders(t_coder *a, t_coder *b)
+static int	compare_coders(t_coder *a, t_coder *b)
 {
 	t_input	*input;
 	long	now;
@@ -29,7 +29,7 @@ int	compare_coders(t_coder *a, t_coder *b)
 	return (-1);
 }
 
-void	hepify_up(t_heap *heap)
+void	heapify_up(t_heap *heap)
 {
 	int		i;
 	t_coder	*tmp;
@@ -44,7 +44,15 @@ void	hepify_up(t_heap *heap)
 	}
 }
 
-void	hepify_down(t_heap *heap, int idx)
+static void	initalizer(int idx, int *left_child, int *right_child,
+		int *smallest)
+{
+	*left_child = (idx * 2) + 1;
+	*right_child = (idx * 2) + 2;
+	*smallest = idx;
+}
+
+void	heapify_down(t_heap *heap, int idx)
 {
 	int		left_child;
 	int		right_child;
@@ -53,9 +61,7 @@ void	hepify_down(t_heap *heap, int idx)
 
 	while (1)
 	{
-		left_child = (idx * 2) + 1;
-		right_child = (idx * 2) + 2;
-		smallest = idx;
+		initalizer(idx, &left_child, &right_child, &smallest);
 		if (left_child < heap->heap_size
 			&& compare_coders(heap->coders[left_child], heap->coders[smallest]))
 			smallest = left_child;
@@ -68,6 +74,9 @@ void	hepify_down(t_heap *heap, int idx)
 			tmp = heap->coders[smallest];
 			heap->coders[smallest] = heap->coders[idx];
 			heap->coders[idx] = tmp;
+			idx = smallest;
 		}
+		else
+			break ;
 	}
 }

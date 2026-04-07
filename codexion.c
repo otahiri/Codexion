@@ -22,6 +22,8 @@ static t_dongle	*create_dongle(t_input *input)
 	dongle->lock = malloc(sizeof(t_mutex));
 	pthread_mutex_init(&dongle->lock->mutex, NULL);
 	pthread_cond_init(&dongle->lock->cond, NULL);
+	dongle->heap = create_heap(input);
+	dongle->next_availabe = get_time(0);
 	return (dongle);
 }
 
@@ -44,7 +46,8 @@ static t_coder	**initialize_coders(t_input *input)
 	i = 0;
 	while (i < input->coders_count)
 	{
-		coders[i]->left = coders[i % input->coders_count]->right;
+		coders[i]->left = coders[(i + 1 + input->coders_count)
+			% input->coders_count]->right;
 		i++;
 	}
 	return (coders);

@@ -6,16 +6,23 @@ CFLAGS = -Wall -Werror -Wextra -g
 
 HEADER = codexion.h
 
-SRCS = codexion.c ft_atoi.c input_validator.c parsing.c coder_actions.c actions.c
+SRCS = actions.c coder_actions.c codexion.c dongle_actions.c \
+       ft_atoi.c input_validator.c min_heap_actions.c min_heap_utils.c parsing.c
+
+OBJ = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(HEADER)
-	$(CC) $(CFLAGS) $(SRCS) -o $@
+%.o: %.c $(HEADER)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(NAME): $(HEADER) $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) -o $@
 
 clean:
-	rm -rf $(NAME)
+	rm -rf $(OBJ)
 
 fclean: clean
+	rm -rf $(NAME)
 
 re: fclean all

@@ -84,8 +84,14 @@ void					compile(t_coder *coder);
 void					refactor(t_coder *coder);
 void					debug(t_coder *coder);
 long					get_time(long time_stamp);
-int						compare_coders(t_coder *a, t_coder *b);
-void					hepify_up(t_heap *heap);
-void					hepify_down(t_heap *heap, int idx);
+void					heapify_up(t_heap *heap);
+void					heapify_down(t_heap *heap, int idx);
+t_heap					*create_heap(t_input *input);
+t_coder					*pop_smallest(t_dongle *dongle);
+t_coder					*peak_top(t_dongle *dongle);
+void					insert_heap(t_coder *coder, t_dongle *dongle);
+void					acquire_dongle(t_dongle *dongle, t_coder *coder);
+void					release_dongle(t_dongle *dongle, t_input *input);
+int						ft_usleep(long timer);
 
 #endif
