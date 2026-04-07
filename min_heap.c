@@ -6,49 +6,37 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 10:47:06 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/06 12:05:17 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/07 09:11:05 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <stdlib.h>
 
 t_heap	*create_heap(t_input *input)
 {
 	t_heap	*heap;
 
 	heap = malloc(sizeof(t_heap));
+	if (!heap)
+		return (NULL);
 	heap->heap_cap = input->coders_count;
 	heap->heap_size = 0;
+	heap->coders = malloc(sizeof(t_coder *) * input->coders_count);
 	return (heap);
 }
 
-int	
-
-int	compare_edf(t_coder *a, t_coder *b)
+void	pop_smallest(t_heap *heap)
 {
-	long	a_burn_out;
-	long	b_burn_out;
-
-	a_burn_out = a->last_compile + a->input->time_to_burnout;
-	b_burn_out = b->last_compile + b->input->time_to_burnout;
-	return (a_burn_out > b_burn_out);
 }
 
-void	ft_sort_min_heap(t_heap *heap)
+void	insert_heap(t_coder *coder, t_dongle *dongle)
 {
-	int	i;
-	int	j;
+	t_heap	*heap;
+	int		i;
 
-	i = 0;
-	while (i < heap->heap_size)
-	{
-		j = 0;
-		while (j < heap->heap_size)
-		{
-			if 
-			j++;
-		}
-		i++;
-	}
+	i = ((heap->heap_size) / 2) % heap->heap_cap;
+	heap = dongle->heap;
+	heap->coders[i] = coder;
+	heap->heap_size++;
+	hepify_up(heap);
 }

@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/02 11:03:26 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/06 12:05:15 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/07 09:10:50 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ struct					s_coder
 	t_dongle			*left;
 	t_dongle			*right;
 	long				last_compile;
-	long				request;
+	long				request_time;
 };
 
 struct					s_mutex
@@ -67,7 +67,7 @@ struct					s_dongle
 
 struct					s_heap
 {
-	t_coder				*coders;
+	t_coder				**coders;
 	int					heap_size;
 	int					heap_cap;
 };
@@ -84,5 +84,8 @@ void					compile(t_coder *coder);
 void					refactor(t_coder *coder);
 void					debug(t_coder *coder);
 long					get_time(long time_stamp);
+int						compare_coders(t_coder *a, t_coder *b);
+void					hepify_up(t_heap *heap);
+void					hepify_down(t_heap *heap, int idx);
 
 #endif
