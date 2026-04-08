@@ -33,7 +33,7 @@ static t_coder	**initialize_coders(t_input *input)
 	int		i;
 
 	i = 0;
-	coders = malloc(sizeof(t_coder *));
+	coders = malloc(sizeof(t_coder *) * input->coders_count);
 	while (i < input->coders_count)
 	{
 		coders[i] = malloc(sizeof(t_coder));
@@ -41,6 +41,8 @@ static t_coder	**initialize_coders(t_input *input)
 		coders[i]->input = input;
 		coders[i]->compile_count = 0;
 		coders[i]->right = create_dongle(input);
+		coders[i]->last_compile = get_time(0);
+		coders[i]->request_time = get_time(0);
 		i++;
 	}
 	i = 0;

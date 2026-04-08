@@ -33,7 +33,7 @@ void	acquire_dongle(t_dongle *dongle, t_coder *coder)
 		ft_usleep(1);
 	if (dongle->cooldown >= 0 && coder->id == peak_top(dongle)->id)
 	{
-		ft_usleep(dongle->next_availabe - get_time(0));
+		ft_usleep((dongle->next_availabe - get_time(0)) * 1000);
 		pthread_mutex_lock(&dongle->lock->mutex);
 		dongle->cooldown = -1;
 		pop_smallest(dongle);
