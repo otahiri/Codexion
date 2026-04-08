@@ -34,7 +34,17 @@ void	run_coders(t_coder **coders, t_input *input)
 	i = 0;
 	while (i < input->coders_count)
 	{
-		pthread_create(&coders[i]->coder_thread, NULL, run_stages, coders[i]);
+		if (i % 2)
+			pthread_create(&coders[i]->coder_thread, NULL, run_stages,
+				coders[i]);
+		i++;
+	}
+	i = 0;
+	while (i < input->coders_count)
+	{
+		if (!(i % 2))
+			pthread_create(&coders[i]->coder_thread, NULL, run_stages,
+				coders[i]);
 		i++;
 	}
 	i = 0;

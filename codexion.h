@@ -48,6 +48,7 @@ struct					s_coder
 	t_dongle			*right;
 	long				last_compile;
 	long				request_time;
+	pthread_mutex_t		lock;
 };
 
 struct					s_mutex

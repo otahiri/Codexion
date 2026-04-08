@@ -18,7 +18,7 @@ static t_dongle	*create_dongle(t_input *input)
 
 	dongle = malloc(sizeof(t_dongle));
 	dongle->down_time = input->dongle_cooldown;
-	dongle->cooldown = 0;
+	dongle->cooldown = 1;
 	dongle->lock = malloc(sizeof(t_mutex));
 	pthread_mutex_init(&dongle->lock->mutex, NULL);
 	pthread_cond_init(&dongle->lock->cond, NULL);
@@ -43,6 +43,7 @@ static t_coder	**initialize_coders(t_input *input)
 		coders[i]->right = create_dongle(input);
 		coders[i]->last_compile = get_time(0);
 		coders[i]->request_time = get_time(0);
+		pthread_mutex_init(&coders[i]->lock, NULL);
 		i++;
 	}
 	i = 0;

@@ -48,16 +48,13 @@ t_coder	*pop_smallest(t_dongle *dongle)
 void	insert_heap(t_coder *coder, t_dongle *dongle)
 {
 	t_heap			*heap;
-	pthread_mutex_t	lock;
 
-	pthread_mutex_init(&lock, NULL);
-	pthread_mutex_lock(&lock);
+	pthread_mutex_lock(&coder->lock);
 	heap = dongle->heap;
 	heap->coders[heap->heap_size] = coder;
 	heap->heap_size++;
 	heapify_up(heap);
-	pthread_mutex_unlock(&lock);
-	pthread_mutex_destroy(&lock);
+	pthread_mutex_unlock(&coder->lock);
 }
 
 t_coder	*peak_top(t_dongle *dongle)

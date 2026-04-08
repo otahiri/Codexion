@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <bits/pthreadtypes.h>
+#include <pthread.h>
 
 int	ft_usleep(long timer)
 {
@@ -21,25 +23,29 @@ int	ft_usleep(long timer)
 
 void	acquire_dongle(t_dongle *dongle, t_coder *coder)
 {
-	pthread_mutex_t	lock;
+	int	done;
 
-	pthread_mutex_init(&lock, NULL);
-	pthread_mutex_lock(&lock);
+	pthread_mutex_lock(&dongle->lock->mutex);
+	done = 0;
 	coder->request_time = get_time(0);
 	insert_heap(coder, dongle);
-	while (coder->id != peak_top(dongle)->id)
-		ft_usleep(10);
-	while (dongle->cooldown < 0)
-		ft_usleep(1);
-	if (dongle->cooldown >= 0 && coder->id == peak_top(dongle)->id)
+	if (dongle->cooldown < 0)
 	{
-		ft_usleep((dongle->next_availabe - get_time(0)) * 1000);
-		pthread_mutex_lock(&dongle->lock->mutex);
-		dongle->cooldown = -1;
-		pop_smallest(dongle);
+		pthread_cond_wait(&dongle->lock->cond, &dongle->lock->mutex);
 	}
-	pthread_mutex_unlock(&lock);
-	pthread_mutex_destroy(&lock);
+	while (!done)
+	{
+		if (dongle->cooldown >= 0 && coder->id == peak_top(dongle)->id)
+		{
+			printf("%ld %d has taken a dongle\n", get_time(coder->input->start),
+				coder->id);
+			ft_usleep((dongle->next_availabe - get_time(0)) * 1000);
+			dongle->cooldown = -1;
+			pop_smallest(dongle);
+			done = 1;
+		}
+	}
+	pthread_mutex_unlock(&dongle->lock->mutex);
 }
 
 void	release_dongle(t_dongle *dongle, t_input *input)
@@ -50,8 +56,8 @@ void	release_dongle(t_dongle *dongle, t_input *input)
 	pthread_mutex_lock(&lock);
 	dongle->next_availabe = get_time(0) + input->dongle_cooldown;
 	dongle->cooldown = 1;
+	pthread_cond_broadcast(&dongle->lock->cond);
 	pthread_mutex_unlock(&dongle->lock->mutex);
-	pthread_cond_signal(&dongle->lock->cond);
 	pthread_mutex_unlock(&lock);
 	pthread_mutex_destroy(&lock);
 }
