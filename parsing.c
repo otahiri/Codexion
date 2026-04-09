@@ -23,7 +23,7 @@ static int	validate_args(char **argv)
 			return (0);
 		i++;
 	}
-	if (!(strcmp("fifo", argv[8]) || strcmp("edf", argv[8])))
+	if ((strcmp("fifo", argv[8]) && strcmp("edf", argv[8])))
 		return (0);
 	return (1);
 }

@@ -120,7 +120,10 @@ int	main(int argc, char *argv[])
 		return (0);
 	coders = initialize_coders(input);
 	if (!coders)
+	{
+		free(input);
 		return (0);
+	}
 	input->start = get_time(0);
 	input->kill_switch = malloc(sizeof(t_off));
 	if (!input->kill_switch)
