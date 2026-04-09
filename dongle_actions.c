@@ -11,8 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <bits/pthreadtypes.h>
-#include <pthread.h>
 
 int	ft_usleep(long timer)
 {
@@ -37,10 +35,10 @@ void	acquire_dongle(t_dongle *dongle, t_coder *coder)
 	{
 		if (dongle->cooldown >= 0 && coder->id == peak_top(dongle)->id)
 		{
-			printf("%ld %d has taken a dongle\n", get_time(coder->input->start),
-				coder->id);
 			ft_usleep((dongle->next_availabe - get_time(0)) * 1000);
 			dongle->cooldown = -1;
+			printf("%ld %d has taken a dongle\n", get_time(coder->input->start),
+				coder->id);
 			pop_smallest(dongle);
 			done = 1;
 		}
