@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   min_heap.c                                         :+:      :+:    :+:   */
+/*   min_heap_actions.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 10:47:06 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/07 09:11:05 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/09 10:30:29 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,11 @@ t_heap	*create_heap(t_input *input)
 	heap->heap_cap = input->coders_count;
 	heap->heap_size = 0;
 	heap->coders = malloc(sizeof(t_coder *) * input->coders_count);
+	if (!heap->coders)
+	{
+		free(heap);
+		return (NULL);
+	}
 	while (i < heap->heap_cap)
 		heap->coders[i++] = NULL;
 	return (heap);

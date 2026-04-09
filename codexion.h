@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/02 11:03:26 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/07 09:10:50 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/09 11:00:05 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,13 @@ typedef struct s_coder	t_coder;
 typedef struct s_dongle	t_dongle;
 typedef struct s_mutex	t_mutex;
 typedef struct s_heap	t_heap;
+typedef struct s_off	t_off;
+
+struct					s_off
+{
+	int					kill_switch;
+	pthread_mutex_t		switch_lock;
+};
 
 typedef struct s_input
 {
@@ -36,6 +43,7 @@ typedef struct s_input
 	int					dongle_cooldown;
 	char				*scheduler;
 	long				start;
+	t_off				*kill_switch;
 }						t_input;
 
 struct					s_coder
