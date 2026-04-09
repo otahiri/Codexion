@@ -19,28 +19,37 @@ int	ft_usleep(long timer)
 	return (0);
 }
 
+void	activate_switch(t_coder *coder)
+{
+	pthread_mutex_lock(&coder->input->kill_switch->switch_lock);
+	coder->input->kill_switch->kill_switch = 1;
+	pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
+}
+
 void	acquire_dongle(t_dongle *dongle, t_coder *coder)
 {
-	int	done;
+	long	time;
 
 	pthread_mutex_lock(&dongle->lock->mutex);
-	done = 0;
 	coder->request_time = get_time(0);
-	insert_heap(coder, dongle);
+	if (coder->request_time == -1 || insert_heap(coder, dongle) == -1)
+		activate_switch(coder);
 	if (dongle->cooldown < 0)
-	{
 		pthread_cond_wait(&dongle->lock->cond, &dongle->lock->mutex);
-	}
-	while (!done)
+	while (1)
 	{
 		if (dongle->cooldown >= 0 && coder->id == peak_top(dongle)->id)
 		{
-			ft_usleep((dongle->next_availabe - get_time(0)) * 1000);
+			time = get_time(0);
+			if (time == -1)
+				activate_switch(coder);
+			ft_usleep((dongle->next_availabe - time) * 1000);
 			dongle->cooldown = -1;
-			printf("%ld %d has taken a dongle\n", get_time(coder->input->start),
-				coder->id);
-			pop_smallest(dongle);
-			done = 1;
+			if (!pop_smallest(dongle))
+				return (activate_switch(coder));
+			time = get_time(coder->input->start);
+			printf("%ld %d has taken a dongle\n", time, coder->id);
+			break ;
 		}
 	}
 	pthread_mutex_unlock(&dongle->lock->mutex);

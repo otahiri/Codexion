@@ -46,11 +46,12 @@ t_coder	*pop_smallest(t_dongle *dongle)
 	heap->coders[0] = heap->coders[heap->heap_size - 1];
 	heap->coders[heap->heap_size - 1] = NULL;
 	heap->heap_size--;
-	heapify_down(heap, 0);
+	if (heapify_down(heap, 0) == -1)
+		return (NULL);
 	return (smallest);
 }
 
-void	insert_heap(t_coder *coder, t_dongle *dongle)
+int	insert_heap(t_coder *coder, t_dongle *dongle)
 {
 	t_heap			*heap;
 
@@ -58,8 +59,10 @@ void	insert_heap(t_coder *coder, t_dongle *dongle)
 	heap = dongle->heap;
 	heap->coders[heap->heap_size] = coder;
 	heap->heap_size++;
-	heapify_up(heap);
+	if (heapify_up(heap))
+		return (-1);
 	pthread_mutex_unlock(&coder->lock);
+	return (0);
 }
 
 t_coder	*peak_top(t_dongle *dongle)

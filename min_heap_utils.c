@@ -12,71 +12,80 @@
 
 #include "codexion.h"
 
-static int	compare_coders(t_coder *a, t_coder *b)
+static int	compare_coders(t_coder *a, t_coder *b, t_input *input)
 {
-	t_input	*input;
 	long	now;
 
-	input = a->input;
 	if (!strcmp("fifo", input->scheduler))
 		return (a->request_time < b->request_time);
 	else if (!strcmp("edf", input->scheduler))
 	{
 		now = get_time(0);
+		if (now == -1)
+			return (-1);
 		return (((a->last_compile + input->time_to_burnout)
 				- now) < ((b->last_compile + input->time_to_burnout) - now));
 	}
 	return (-1);
 }
 
-void	heapify_up(t_heap *heap)
+int	heapify_up(t_heap *heap)
 {
 	int		i;
+	int		comparison;
 	t_coder	*tmp;
 
 	i = heap->heap_size - 1;
-	while (i > 0 && compare_coders(heap->coders[i], heap->coders[(i - 1) / 2]))
+	comparison = compare_coders(heap->coders[i], heap->coders[(i - 1) / 2],
+			heap->coders[0]->input);
+	while (i > 0 && comparison)
 	{
+		if (comparison == -1)
+			return (-1);
 		tmp = heap->coders[i];
 		heap->coders[i] = heap->coders[(i - 1) / 2];
 		heap->coders[(i - 1) / 2] = tmp;
 		i = (i - 1) / 2;
+		comparison = compare_coders(heap->coders[i], heap->coders[(i - 1) / 2],
+				heap->coders[0]->input);
 	}
+	return (0);
 }
 
-static void	initalizer(int idx, int *left_child, int *right_child,
-		int *smallest)
+static void	initalizer(int idx, long **value, t_heap *heap)
 {
-	*left_child = (idx * 2) + 1;
-	*right_child = (idx * 2) + 2;
-	*smallest = idx;
+	*value[0] = (idx * 2) + 2;
+	*value[1] = (idx * 2) + 1;
+	*value[3] = idx;
+	*value[2] = compare_coders(heap->coders[*value[1]],
+			heap->coders[*value[3]], heap->coders[0]->input);
 }
 
-void	heapify_down(t_heap *heap, int idx)
+int	heapify_down(t_heap *heap, int idx)
 {
-	int		left_child;
-	int		right_child;
-	int		smallest;
+	long	*value;
 	t_coder	*tmp;
 
+	value = malloc(sizeof(int) * 4);
 	while (1)
 	{
-		initalizer(idx, &left_child, &right_child, &smallest);
-		if (left_child < heap->heap_size
-			&& compare_coders(heap->coders[left_child], heap->coders[smallest]))
-			smallest = left_child;
-		if (right_child < heap->heap_size
-			&& compare_coders(heap->coders[right_child],
-				heap->coders[smallest]))
-			smallest = right_child;
-		if (smallest != idx)
+		initalizer(idx, &value, heap);
+		if (value[2] == -1)
+			return (-1);
+		if (value[1] < heap->heap_size && value[2])
+			value[3] = value[1];
+		if (value[0] < heap->heap_size && value[2])
+			value[3] = value[0];
+		if (value[3] != idx)
 		{
-			tmp = heap->coders[smallest];
-			heap->coders[smallest] = heap->coders[idx];
+			tmp = heap->coders[value[3]];
+			heap->coders[value[3]] = heap->coders[idx];
 			heap->coders[idx] = tmp;
-			idx = smallest;
+			idx = value[3];
 		}
 		else
 			break ;
 	}
+	free(value);
+	return (0);
 }

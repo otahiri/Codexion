@@ -12,14 +12,12 @@
 
 #include "codexion.h"
 
-void	*free_all(t_coder **coders)
+void	*free_all(t_coder **coders, t_input *input)
 {
-	t_input	*input;
 	int		i;
 
 	i = 0;
-	input = coders[0]->input;
-	while (i < input->coders_count)
+	while (i < input->coders_count && coders)
 	{
 		free(coders[i]->right->heap->coders);
 		free(coders[i]->right->heap);
@@ -28,7 +26,8 @@ void	*free_all(t_coder **coders)
 		free(coders[i]);
 		i++;
 	}
-	free(coders);
+	if (coders)
+		free(coders);
 	free(input->kill_switch);
 	free(input);
 	return (NULL);
@@ -126,14 +125,14 @@ int	main(int argc, char *argv[])
 	}
 	input->start = get_time(0);
 	input->kill_switch = malloc(sizeof(t_off));
-	if (!input->kill_switch)
+	if (!input->kill_switch || input->start == -1)
 	{
-		free_all(coders);
+		free_all(coders, input);
 		return (0);
 	}
 	input->kill_switch->kill_switch = 0;
 	pthread_mutex_init(&input->kill_switch->switch_lock, NULL);
 	run_coders(coders, input);
-	free_all(coders);
+	free_all(coders, input);
 	return (0);
 }
