@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 10:47:06 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/09 10:30:29 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/10 10:38:07 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,6 @@ t_coder	*pop_smallest(t_dongle *dongle)
 	heap->coders[0] = heap->coders[heap->heap_size - 1];
 	heap->coders[heap->heap_size - 1] = NULL;
 	heap->heap_size--;
-	if (heapify_down(heap, 0) == -1)
-		return (NULL);
 	return (smallest);
 }
 
@@ -59,8 +57,6 @@ int	insert_heap(t_coder *coder, t_dongle *dongle)
 	heap = dongle->heap;
 	heap->coders[heap->heap_size] = coder;
 	heap->heap_size++;
-	if (heapify_up(heap))
-		return (-1);
 	pthread_mutex_unlock(&coder->lock);
 	return (0);
 }

@@ -11,12 +11,15 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <pthread.h>
 
 void	*run_stages(void *args)
 {
 	t_coder	*coder;
 
 	coder = args;
+	if (!(coder->id % 2))
+		usleep(1000);
 	while (coder->compile_count < coder->input->compile_count)
 	{
 		compile(coder);
@@ -29,24 +32,18 @@ void	*run_stages(void *args)
 
 void	run_coders(t_coder **coders, t_input *input)
 {
-	int	i;
+	int			i;
+	pthread_t	burn_out;
 
 	i = 0;
 	while (i < input->coders_count)
 	{
-		if (i % 2)
-			pthread_create(&coders[i]->coder_thread, NULL, run_stages,
-				coders[i]);
+		pthread_create(&coders[i]->coder_thread, NULL, run_stages,
+			coders[i]);
 		i++;
 	}
-	i = 0;
-	while (i < input->coders_count)
-	{
-		if (!(i % 2))
-			pthread_create(&coders[i]->coder_thread, NULL, run_stages,
-				coders[i]);
-		i++;
-	}
+	pthread_create(&burn_out, NULL, monitoring, coders);
+	pthread_join(burn_out, NULL);
 	i = 0;
 	while (i < input->coders_count)
 	{

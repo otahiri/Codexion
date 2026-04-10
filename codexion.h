@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/02 11:03:26 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/09 11:00:05 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/10 10:37:16 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ struct					s_heap
 int						ft_atoi(char *num);
 int						is_space(char c);
 int						ft_isdigit(char c);
-t_input					*parse_input(char **argv);
+t_input					*parse_input(char **argv, int argc);
 int						ft_isdigit(char c);
 int						is_valid_number(char *num);
 void					run_coders(t_coder **coders, t_input *input);
@@ -92,9 +92,9 @@ void					*run_stages(void *args);
 void					compile(t_coder *coder);
 void					refactor(t_coder *coder);
 void					debug(t_coder *coder);
-long					get_time(long time_stamp);
-int						heapify_up(t_heap *heap);
-int						heapify_down(t_heap *heap, int idx);
+long					get_time(long time_stamp, t_input *input);
+void					heapify_up(t_heap *heap);
+void					heapify_down(t_heap *heap, int idx);
 t_heap					*create_heap(t_input *input);
 t_coder					*pop_smallest(t_dongle *dongle);
 t_coder					*peak_top(t_dongle *dongle);
@@ -102,5 +102,6 @@ int						insert_heap(t_coder *coder, t_dongle *dongle);
 void					acquire_dongle(t_dongle *dongle, t_coder *coder);
 void					release_dongle(t_dongle *dongle, t_input *input);
 int						ft_usleep(long timer);
+void					*monitoring(void *arg);
 
 #endif

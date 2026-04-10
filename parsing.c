@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/02 11:31:06 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/02 18:59:04 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/10 10:36:51 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,12 @@ static int	is_input_valid(t_input *input)
 	return (1);
 }
 
-t_input	*parse_input(char **argv)
+t_input	*parse_input(char **argv, int argc)
 {
 	t_input	*input;
 
+	if (argc != 9)
+		return (NULL);
 	if (!validate_args(argv))
 		return (NULL);
 	input = malloc(sizeof(t_input));

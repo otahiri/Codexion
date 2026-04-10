@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/02 11:06:00 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/09 10:57:38 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/10 10:41:08 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static t_dongle	*create_dongle(t_input *input)
 		free(dongle);
 		return (NULL);
 	}
-	dongle->next_availabe = get_time(0);
+	dongle->next_availabe = get_time(0, input);
 	return (dongle);
 }
 
@@ -74,8 +74,8 @@ static	t_coder	*coder_setup( t_input *input)
 		free(coder);
 		return (NULL);
 	}
-	coder->last_compile = get_time(0);
-	coder->request_time = get_time(0);
+	coder->last_compile = get_time(0, input);
+	coder->request_time = get_time(0, input);
 	pthread_mutex_init(&coder->lock, NULL);
 	return (coder);
 }
@@ -93,7 +93,7 @@ static t_coder	**initialize_coders(t_input *input)
 	{
 		coders[i] = coder_setup(input);
 		if (!coders[i])
-			return (free_all(coders));
+			return (free_all(coders, input));
 		coders[i]->id = i + 1;
 		i++;
 	}
@@ -112,9 +112,7 @@ int	main(int argc, char *argv[])
 	t_input	*input;
 	t_coder	**coders;
 
-	if (argc != 9)
-		return (0);
-	input = parse_input(argv);
+	input = parse_input(argv, argc);
 	if (!input)
 		return (0);
 	coders = initialize_coders(input);
@@ -123,9 +121,9 @@ int	main(int argc, char *argv[])
 		free(input);
 		return (0);
 	}
-	input->start = get_time(0);
+	input->start = get_time(0, input);
 	input->kill_switch = malloc(sizeof(t_off));
-	if (!input->kill_switch || input->start == -1)
+	if (!input->kill_switch)
 	{
 		free_all(coders, input);
 		return (0);
