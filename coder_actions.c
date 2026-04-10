@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <pthread.h>
 
 void	*run_stages(void *args)
 {
@@ -20,7 +19,7 @@ void	*run_stages(void *args)
 	coder = args;
 	if (!(coder->id % 2))
 		usleep(1000);
-	while (coder->compile_count < coder->input->compile_count)
+	while (coder->compile_count < coder->input->number_of_compiles_required)
 	{
 		compile(coder);
 		debug(coder);

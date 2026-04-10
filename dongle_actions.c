@@ -23,7 +23,7 @@ int	ft_usleep(long timer)
 void	activate_switch(t_coder *coder)
 {
 	pthread_mutex_lock(&coder->input->kill_switch->switch_lock);
-	coder->input->kill_switch->kill_switch = 1;
+	coder->input->kill_switch->kill_switch++;
 	pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
 }
 
@@ -39,6 +39,14 @@ void	acquire_dongle(t_dongle *dongle, t_coder *coder)
 		pthread_cond_wait(&dongle->lock->cond, &dongle->lock->mutex);
 	while (1)
 	{
+		pthread_mutex_lock(&coder->input->kill_switch->switch_lock);
+		if (coder->input->kill_switch->kill_switch)
+		{
+			pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
+			pthread_mutex_unlock(&dongle->lock->mutex);
+			return ;
+		}
+		pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
 		if (dongle->cooldown >= 0 && coder->id == peak_top(dongle)->id)
 		{
 			time = get_time(0, coder->input);

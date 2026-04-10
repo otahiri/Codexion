@@ -39,7 +39,7 @@ typedef struct s_input
 	int					time_to_compile;
 	int					time_to_refactor;
 	int					time_to_debug;
-	int					compile_count;
+	int					number_of_compiles_required;
 	int					dongle_cooldown;
 	char				*scheduler;
 	long				start;
