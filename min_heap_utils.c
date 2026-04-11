@@ -53,12 +53,21 @@ static void	initalizer(int idx, int *left_child, int *right_child,
 	*smallest = idx;
 }
 
+static void	switch_coders(t_heap *heap, int smallest, int idx)
+{
+	t_coder	*tmp;
+
+	tmp = heap->coders[smallest];
+	heap->coders[smallest] = heap->coders[idx];
+	heap->coders[idx] = tmp;
+	idx = smallest;
+}
+
 void	heapify_down(t_heap *heap, int idx)
 {
 	int		left_child;
 	int		right_child;
 	int		smallest;
-	t_coder	*tmp;
 
 	while (1)
 	{
@@ -73,10 +82,7 @@ void	heapify_down(t_heap *heap, int idx)
 			smallest = right_child;
 		if (smallest != idx)
 		{
-			tmp = heap->coders[smallest];
-			heap->coders[smallest] = heap->coders[idx];
-			heap->coders[idx] = tmp;
-			idx = smallest;
+			switch_coders(heap, smallest, idx);
 		}
 		else
 			break ;

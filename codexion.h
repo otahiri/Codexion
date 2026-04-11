@@ -28,8 +28,9 @@ typedef struct s_off	t_off;
 
 struct					s_off
 {
-	int					kill_switch;
+	int					turn_off;
 	pthread_mutex_t		switch_lock;
+	char				*dialogue;
 };
 
 typedef struct s_input
@@ -101,7 +102,9 @@ t_coder					*peak_top(t_dongle *dongle);
 int						insert_heap(t_coder *coder, t_dongle *dongle);
 void					acquire_dongle(t_dongle *dongle, t_coder *coder);
 void					release_dongle(t_dongle *dongle, t_input *input);
-int						ft_usleep(long timer);
+void					ft_usleep(long timer, t_input *input);
 void					*monitoring(void *arg);
+char					*ft_strcpy(const char *src, char *dst);
+int						activate_switch(t_input *input);
 
 #endif

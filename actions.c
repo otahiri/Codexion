@@ -11,23 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <pthread.h>
-
-long	get_time(long time_stamp, t_input *input)
-{
-	struct timeval	tv;
-	int				res;
-
-	res = gettimeofday(&tv, NULL);
-	if (res)
-	{
-		pthread_mutex_lock(&input->kill_switch->switch_lock);
-		input->kill_switch->kill_switch = 1;
-		pthread_mutex_unlock(&input->kill_switch->switch_lock);
-		return (-1);
-	}
-	return (((tv.tv_sec * 1000) + (tv.tv_usec / 1000)) - time_stamp);
-}
 
 void	compile(t_coder *coder)
 {
@@ -37,7 +20,7 @@ void	compile(t_coder *coder)
 	acquire_dongle(coder->right, coder);
 	time = get_time(coder->input->start, coder->input);
 	pthread_mutex_lock(&coder->input->kill_switch->switch_lock);
-	if (coder->input->kill_switch->kill_switch)
+	if (coder->input->kill_switch->turn_off)
 	{
 		release_dongle(coder->right, coder->input);
 		release_dongle(coder->left, coder->input);
@@ -46,7 +29,7 @@ void	compile(t_coder *coder)
 	}
 	pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
 	printf("%ld %d is compiling\n", time, coder->id);
-	ft_usleep(coder->input->time_to_compile * 1000);
+	ft_usleep(coder->input->time_to_compile * 1000, coder->input);
 	coder->last_compile = get_time(0, coder->input);
 	release_dongle(coder->right, coder->input);
 	release_dongle(coder->left, coder->input);
@@ -58,14 +41,14 @@ void	refactor(t_coder *coder)
 
 	time = get_time(coder->input->start, coder->input);
 	pthread_mutex_lock(&coder->input->kill_switch->switch_lock);
-	if (coder->input->kill_switch->kill_switch)
+	if (coder->input->kill_switch->turn_off)
 	{
 		pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
 		return ;
 	}
 	pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
 	printf("%ld %d is refactoring\n", time, coder->id);
-	ft_usleep(coder->input->time_to_refactor * 1000);
+	ft_usleep(coder->input->time_to_refactor * 1000, coder->input);
 }
 
 void	debug(t_coder *coder)
@@ -74,12 +57,12 @@ void	debug(t_coder *coder)
 
 	time = get_time(coder->input->start, coder->input);
 	pthread_mutex_lock(&coder->input->kill_switch->switch_lock);
-	if (coder->input->kill_switch->kill_switch)
+	if (coder->input->kill_switch->turn_off)
 	{
 		pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
 		return ;
 	}
 	pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
 	printf("%ld %d is debugging\n", time, coder->id);
-	ft_usleep(coder->input->time_to_debug * 1000);
+	ft_usleep(coder->input->time_to_debug * 1000, coder->input);
 }

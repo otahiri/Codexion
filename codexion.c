@@ -128,7 +128,7 @@ int	main(int argc, char *argv[])
 		free_all(coders, input);
 		return (0);
 	}
-	input->kill_switch->kill_switch = 0;
+	input->kill_switch->turn_off = 0;
 	pthread_mutex_init(&input->kill_switch->switch_lock, NULL);
 	run_coders(coders, input);
 	free_all(coders, input);

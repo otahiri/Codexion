@@ -11,55 +11,57 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <pthread.h>
 
-int	ft_usleep(long timer)
+
+
+int	activate_switch(t_input *input)
 {
-	if (timer > 0)
-		return (usleep(timer));
-	return (0);
+	pthread_mutex_lock(&input->kill_switch->switch_lock);
+	input->kill_switch->turn_off++;
+	pthread_mutex_unlock(&input->kill_switch->switch_lock);
+	return (1);
 }
 
-void	activate_switch(t_coder *coder)
+int	lock_dongle(t_coder *coder, t_dongle *dongle)
 {
+	long	time;
+
 	pthread_mutex_lock(&coder->input->kill_switch->switch_lock);
-	coder->input->kill_switch->kill_switch++;
+	if (coder->input->kill_switch->turn_off)
+	{
+		pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
+		return (1);
+	}
 	pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
+	if (dongle->cooldown >= 0 && coder->id == peak_top(dongle)->id)
+	{
+		time = get_time(0, coder->input);
+		if (time == -1)
+			activate_switch(coder->input);
+		ft_usleep((dongle->next_availabe - time) * 1000, coder->input);
+		dongle->cooldown = -1;
+		if (!pop_smallest(dongle))
+			return (activate_switch(coder->input));
+		time = get_time(coder->input->start, coder->input);
+		if (time == -1)
+			activate_switch(coder->input);
+		printf("%ld %d has taken a dongle\n", time, coder->id);
+		return (1);
+	}
+	return (0);
 }
 
 void	acquire_dongle(t_dongle *dongle, t_coder *coder)
 {
-	long	time;
-
 	pthread_mutex_lock(&dongle->lock->mutex);
 	coder->request_time = get_time(0, coder->input);
 	if (coder->request_time == -1 || insert_heap(coder, dongle) == -1)
-		activate_switch(coder);
+		activate_switch(coder->input);
 	if (dongle->cooldown < 0)
 		pthread_cond_wait(&dongle->lock->cond, &dongle->lock->mutex);
-	while (1)
+	while (!lock_dongle(coder, dongle))
 	{
-		pthread_mutex_lock(&coder->input->kill_switch->switch_lock);
-		if (coder->input->kill_switch->kill_switch)
-		{
-			pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
-			pthread_mutex_unlock(&dongle->lock->mutex);
-			return ;
-		}
-		pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
-		if (dongle->cooldown >= 0 && coder->id == peak_top(dongle)->id)
-		{
-			time = get_time(0, coder->input);
-			if (time == -1)
-				activate_switch(coder);
-			ft_usleep((dongle->next_availabe - time) * 1000);
-			dongle->cooldown = -1;
-			if (!pop_smallest(dongle))
-				return (activate_switch(coder));
-			time = get_time(coder->input->start, coder->input);
-			printf("%ld %d has taken a dongle\n", time, coder->id);
-			break ;
-		}
+		continue ;
 	}
 	pthread_mutex_unlock(&dongle->lock->mutex);
 }
