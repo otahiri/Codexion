@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/02 11:03:26 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/13 09:51:39 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/10 10:37:16 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ struct					s_off
 {
 	int					turn_off;
 	pthread_mutex_t		switch_lock;
+	pthread_mutex_t		monitoring_lock;
+
 	char				*dialogue;
 };
 

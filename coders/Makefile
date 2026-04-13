@@ -2,13 +2,12 @@ NAME = codexion
 
 CC = cc
 
-CFLAGS = -Wall -Werror -Wextra -g
-# -fsanitize=thread
+CFLAGS = -Wall -Werror -Wextra -pthread -g -fsanitize=thread
 
 HEADER = codexion.h
 
-SRCS = actions.c burn_out_monitor.c coder_actions.c codexion.c dongle_actions.c extra_utils.c\
-		ft_atoi.c min_heap_actions.c min_heap_utils.c parsing.c
+SRCS = actions.c coder_actions.c codexion.c dongle_actions.c \
+       ft_atoi.c extra_utils.c min_heap_actions.c min_heap_utils.c parsing.c burn_out_monitor.c
 
 OBJ = $(SRCS:.c=.o)
 

@@ -1,18 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   extra_utils.c                                      :+:      :+:    :+:   */
+/*   input_validator.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/02 18:55:04 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/13 09:48:20 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/02 18:59:02 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <pthread.h>
-#include <unistd.h>
 
 int	is_valid_number(char *num)
 {
@@ -57,20 +55,11 @@ long	get_time(long time_stamp, t_input *input)
 
 void	ft_usleep(long timer, t_input *input)
 {
-	int	res;
-
-	printf("here\n");
 	while (timer > 0)
 	{
-		pthread_mutex_lock(&input->kill_switch->switch_lock);
 		if (input->kill_switch->turn_off)
-		{
-			pthread_mutex_unlock(&input->kill_switch->switch_lock);
 			return ;
-		}
-		pthread_mutex_unlock(&input->kill_switch->switch_lock);
-		res = usleep(1000);
-		if (res == -1)
+		if (usleep(1000) == -1)
 			activate_switch(input);
 		timer -= 1000;
 	}
