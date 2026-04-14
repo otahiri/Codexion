@@ -30,6 +30,8 @@ int	lock_dongle(t_coder *coder, t_dongle *dongle)
 		time = get_time(coder->input->start, coder->input);
 		if (time == -1)
 			activate_switch(coder->input);
+		if (check_switch(coder->input))
+			return (1);
 		printf("%ld %d has taken a dongle\n", time, coder->id);
 		return (1);
 	}
@@ -40,7 +42,8 @@ void	acquire_dongle(t_dongle *dongle, t_coder *coder)
 {
 	pthread_mutex_lock(&dongle->lock->mutex);
 	coder->request_time = get_time(0, coder->input);
-	if (coder->request_time == -1 || insert_heap(coder, dongle) == -1)
+	if (coder->request_time == -1 || insert_heap(coder, dongle) == -1
+		|| !coder->input->time_to_burnout)
 		activate_switch(coder->input);
 	if (dongle->cooldown < 0)
 		pthread_cond_wait(&dongle->lock->cond, &dongle->lock->mutex);

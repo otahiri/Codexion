@@ -32,8 +32,10 @@ void	*run_stages(void *args)
 void	run_coders(t_coder **coders, t_input *input)
 {
 	int			i;
+	pthread_t	burn_out;
 
 	i = 0;
+	pthread_create(&burn_out, NULL, monitoring, coders);
 	while (i < input->coders_count)
 	{
 		coders[i]->last_compile = input->start;
@@ -47,5 +49,6 @@ void	run_coders(t_coder **coders, t_input *input)
 		pthread_join(coders[i]->coder_thread, NULL);
 		i++;
 	}
+	pthread_join(burn_out, NULL);
 	return ;
 }

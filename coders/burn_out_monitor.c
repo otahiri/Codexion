@@ -11,8 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <stdio.h>
-#include <unistd.h>
 
 static void	wake_up_coder(t_coder **coders)
 {
@@ -60,8 +58,8 @@ static int	check_coders_burnout(t_coder **coders, pthread_mutex_t lock)
 	pthread_mutex_lock(&lock);
 	while (i < input->coders_count)
 	{
-		if (coders[i]->compile_count == input->number_of_compiles_required
-			&& (coders[i]->last_compile + input->time_to_burnout > get_time(0,
+		if (coders[i]->compile_count < input->number_of_compiles_required
+			&& (coders[i]->last_compile + input->time_to_burnout <= get_time(0,
 					input)))
 		{
 			printf("%ld %d burned out\n", get_time(input->start, input),
@@ -87,13 +85,12 @@ void	*monitoring(void *arg)
 	input = coders[0]->input;
 	lock = input->kill_switch->monitoring_lock;
 	pthread_mutex_init(&lock, NULL);
-	usleep(1000);
 	while (1)
 	{
-		if (check_coders_burnout(coders, lock) || check_coders_done(coders,
+		if (check_coders_done(coders, lock) || check_coders_burnout(coders,
 				lock))
 			break ;
-		usleep(5000);
+		usleep(1000);
 	}
 	pthread_mutex_unlock(&lock);
 	pthread_mutex_destroy(&lock);

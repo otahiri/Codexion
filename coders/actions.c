@@ -17,22 +17,14 @@ void	compile(t_coder *coder)
 	long			time;
 
 	if (coder->left == coder->right)
-	{
 		activate_switch(coder->input);
+	if (check_switch(coder->input))
 		return ;
-	}
 	acquire_dongle(coder->left, coder);
 	acquire_dongle(coder->right, coder);
 	time = get_time(coder->input->start, coder->input);
-	pthread_mutex_lock(&coder->input->kill_switch->switch_lock);
-	if (coder->input->kill_switch->turn_off)
-	{
-		release_dongle(coder->right, coder->input);
-		release_dongle(coder->left, coder->input);
-		pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
+	if (check_switch(coder->input))
 		return ;
-	}
-	pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
 	printf("%ld %d is compiling\n", time, coder->id);
 	ft_usleep(coder->input->time_to_compile, coder);
 	coder->last_compile = get_time(0, coder->input);
@@ -45,13 +37,8 @@ void	refactor(t_coder *coder)
 	long			time;
 
 	time = get_time(coder->input->start, coder->input);
-	pthread_mutex_lock(&coder->input->kill_switch->switch_lock);
-	if (coder->input->kill_switch->turn_off)
-	{
-		pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
+	if (check_switch(coder->input))
 		return ;
-	}
-	pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
 	printf("%ld %d is refactoring\n", time, coder->id);
 	ft_usleep(coder->input->time_to_refactor, coder);
 }
@@ -61,13 +48,8 @@ void	debug(t_coder *coder)
 	long			time;
 
 	time = get_time(coder->input->start, coder->input);
-	pthread_mutex_lock(&coder->input->kill_switch->switch_lock);
-	if (coder->input->kill_switch->turn_off)
-	{
-		pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
+	if (check_switch(coder->input))
 		return ;
-	}
-	pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
 	printf("%ld %d is debugging\n", time, coder->id);
 	ft_usleep(coder->input->time_to_debug, coder);
 }
