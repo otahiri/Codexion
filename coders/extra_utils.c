@@ -66,5 +66,7 @@ void	ft_usleep(long timer, t_coder *coder)
 	ts.tv_nsec %= (1000 * 1000 * 1000);
 	if (check_switch(coder->input))
 		return ;
+	pthread_mutex_lock(&coder->sleep->mutex);
 	pthread_cond_timedwait(&coder->sleep->cond, &coder->sleep->mutex, &ts);
+	pthread_mutex_unlock(&coder->sleep->mutex);
 }

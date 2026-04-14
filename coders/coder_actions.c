@@ -11,21 +11,29 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <bits/pthreadtypes.h>
+#include <pthread.h>
+#include <unistd.h>
 
 void	*run_stages(void *args)
 {
 	t_coder	*coder;
+	pthread_mutex_t	lock;
 
+	pthread_mutex_init(&lock, NULL);
 	coder = args;
 	if (!(coder->id % 2))
 		usleep(1000);
 	while (coder->compile_count < coder->input->number_of_compiles_required)
 	{
+		pthread_mutex_lock(&lock);
 		compile(coder);
 		debug(coder);
 		refactor(coder);
 		coder->compile_count++;
+		pthread_mutex_unlock(&lock);
 	}
+	pthread_mutex_destroy(&lock);
 	return (NULL);
 }
 

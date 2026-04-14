@@ -12,49 +12,36 @@
 
 #include "codexion.h"
 
-static void	wake_up_coder(t_coder **coders)
+static int	check_coders_done(t_coder **coders)
 {
-	int		i;
-	t_input	*input;
-
-	i = 0;
-	input = coders[0]->input;
-	while (i < input->coders_count)
-	{
-		pthread_cond_signal(&coders[i]->left->lock->cond);
-		pthread_cond_signal(&coders[i]->right->lock->cond);
-		i++;
-	}
-}
-
-static int	check_coders_done(t_coder **coders, pthread_mutex_t lock)
-{
-	int		i;
-	t_input	*input;
+	int				i;
+	t_input			*input;
 
 	input = coders[0]->input;
 	i = 0;
-	pthread_mutex_lock(&lock);
 	while (i < input->coders_count)
 	{
+		pthread_mutex_lock(&coders[i]->lock);
 		if (coders[i]->compile_count >= input->number_of_compiles_required)
 		{
-			pthread_mutex_unlock(&lock);
+			pthread_mutex_unlock(&coders[i]->lock);
 			return (1);
 		}
+		pthread_mutex_unlock(&coders[i]->lock);
 		i++;
 	}
-	pthread_mutex_unlock(&lock);
 	return (0);
 }
 
-static int	check_coders_burnout(t_coder **coders, pthread_mutex_t lock)
+static int	check_coders_burnout(t_coder **coders)
 {
-	int		i;
-	t_input	*input;
+	int				i;
+	t_input			*input;
+	pthread_mutex_t	lock;
 
 	input = coders[0]->input;
 	i = 0;
+	pthread_mutex_init(&lock, NULL);
 	pthread_mutex_lock(&lock);
 	while (i < input->coders_count)
 	{
@@ -65,13 +52,13 @@ static int	check_coders_burnout(t_coder **coders, pthread_mutex_t lock)
 			printf("%ld %d burned out\n", get_time(input->start, input),
 				coders[i]->id);
 			activate_switch(input);
-			wake_up_coder(coders);
 			pthread_mutex_unlock(&lock);
 			return (1);
 		}
 		i++;
 	}
 	pthread_mutex_unlock(&lock);
+	pthread_mutex_destroy(&lock);
 	return (0);
 }
 
@@ -79,20 +66,14 @@ void	*monitoring(void *arg)
 {
 	t_coder			**coders;
 	t_input			*input;
-	pthread_mutex_t	lock;
 
 	coders = arg;
 	input = coders[0]->input;
-	lock = input->kill_switch->monitoring_lock;
-	pthread_mutex_init(&lock, NULL);
 	while (1)
 	{
-		if (check_coders_done(coders, lock) || check_coders_burnout(coders,
-				lock))
+		if (check_coders_done(coders) || check_coders_burnout(coders))
 			break ;
 		usleep(1000);
 	}
-	pthread_mutex_unlock(&lock);
-	pthread_mutex_destroy(&lock);
 	return (NULL);
 }
