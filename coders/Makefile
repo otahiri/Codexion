@@ -13,7 +13,7 @@ SRCS = actions.c coder_actions.c codexion.c dongle_actions.c \
 
 OBJ = $(SRCS:.c=.o)
 
-all: $(NAME)
+all: $(NAME) clean
 
 %.o: %.c $(HEADER)
 	$(CC) $(CFLAGS) -c $< -o $@
