@@ -59,6 +59,7 @@ struct					s_coder
 	t_dongle			*right;
 	long				last_compile;
 	long				request_time;
+	t_mutex				*sleep;
 	pthread_mutex_t		lock;
 };
 
@@ -104,9 +105,10 @@ t_coder					*peak_top(t_dongle *dongle);
 int						insert_heap(t_coder *coder, t_dongle *dongle);
 void					acquire_dongle(t_dongle *dongle, t_coder *coder);
 void					release_dongle(t_dongle *dongle, t_input *input);
-void					ft_usleep(long timer, t_input *input);
+void					ft_usleep(long timer, t_coder *coder);
 void					*monitoring(void *arg);
 char					*ft_strcpy(const char *src, char *dst);
 int						activate_switch(t_input *input);
+int						check_switch(t_input *input);
 
 #endif

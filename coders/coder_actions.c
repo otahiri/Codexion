@@ -42,12 +42,12 @@ void	run_coders(t_coder **coders, t_input *input)
 		i++;
 	}
 	pthread_create(&burn_out, NULL, monitoring, coders);
-	pthread_join(burn_out, NULL);
 	i = 0;
 	while (i < input->coders_count)
 	{
 		pthread_join(coders[i]->coder_thread, NULL);
 		i++;
 	}
+	pthread_join(burn_out, NULL);
 	return ;
 }

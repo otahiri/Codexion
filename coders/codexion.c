@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <stdlib.h>
 
 void	*free_all(t_coder **coders, t_input *input)
 {
@@ -23,6 +24,7 @@ void	*free_all(t_coder **coders, t_input *input)
 		free(coders[i]->right->heap);
 		free(coders[i]->right->lock);
 		free(coders[i]->right);
+		free(coders[i]->sleep);
 		free(coders[i]);
 		i++;
 	}
@@ -76,6 +78,8 @@ static	t_coder	*coder_setup( t_input *input)
 	}
 	coder->last_compile = get_time(0, input);
 	coder->request_time = get_time(0, input);
+	coder->sleep = malloc(sizeof(t_mutex));
+	pthread_mutex_init(&coder->sleep->mutex, NULL);
 	pthread_mutex_init(&coder->lock, NULL);
 	return (coder);
 }

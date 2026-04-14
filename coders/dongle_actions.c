@@ -12,33 +12,18 @@
 
 #include "codexion.h"
 
-
-
-int	activate_switch(t_input *input)
-{
-	pthread_mutex_lock(&input->kill_switch->switch_lock);
-	input->kill_switch->turn_off++;
-	pthread_mutex_unlock(&input->kill_switch->switch_lock);
-	return (1);
-}
-
 int	lock_dongle(t_coder *coder, t_dongle *dongle)
 {
 	long	time;
 
-	pthread_mutex_lock(&coder->input->kill_switch->switch_lock);
-	if (coder->input->kill_switch->turn_off)
-	{
-		pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
+	if (check_switch(coder->input))
 		return (1);
-	}
-	pthread_mutex_unlock(&coder->input->kill_switch->switch_lock);
 	if (dongle->cooldown >= 0 && coder->id == peak_top(dongle)->id)
 	{
 		time = get_time(0, coder->input);
 		if (time == -1)
 			activate_switch(coder->input);
-		ft_usleep((dongle->next_availabe - time) * 1000, coder->input);
+		ft_usleep((dongle->next_availabe - time), coder);
 		dongle->cooldown = -1;
 		if (!pop_smallest(dongle))
 			return (activate_switch(coder->input));

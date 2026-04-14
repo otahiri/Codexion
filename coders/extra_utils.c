@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <pthread.h>
 
 int	is_valid_number(char *num)
 {
@@ -53,14 +54,17 @@ long	get_time(long time_stamp, t_input *input)
 	return (((tv.tv_sec * 1000) + (tv.tv_usec / 1000)) - time_stamp);
 }
 
-void	ft_usleep(long timer, t_input *input)
+void	ft_usleep(long timer, t_coder *coder)
 {
-	while (timer > 0)
-	{
-		if (input->kill_switch->turn_off)
-			return ;
-		if (usleep(1000) == -1)
-			activate_switch(input);
-		timer -= 1000;
-	}
+	struct timeval	tv;
+	struct timespec	ts;
+
+	gettimeofday(&tv, NULL);
+	ts.tv_sec = time(NULL) + timer / 1000;
+	ts.tv_nsec = tv.tv_usec * 1000 + 1000 * 1000 * (timer % 1000);
+	ts.tv_sec += ts.tv_nsec / (1000 * 1000 * 1000);
+	ts.tv_nsec %= (1000 * 1000 * 1000);
+	if (check_switch(coder->input))
+		return ;
+	pthread_cond_timedwait(&coder->sleep->cond, &coder->sleep->mutex, &ts);
 }
