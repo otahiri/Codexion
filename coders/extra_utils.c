@@ -12,6 +12,7 @@
 
 #include "codexion.h"
 #include <pthread.h>
+#include <stdio.h>
 
 int	is_valid_number(char *num)
 {

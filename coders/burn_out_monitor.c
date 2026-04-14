@@ -11,11 +11,27 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <pthread.h>
+
+static void	wake_up_coders(t_coder **coders)
+{
+	int		i;
+	t_input	*input;
+
+	i = 0;
+	input = coders[0]->input;
+	while (i < input->coders_count)
+	{
+		pthread_cond_broadcast(&coders[i]->sleep->cond);
+		pthread_cond_signal(&coders[i]->sleep->cond);
+		i++;
+	}
+}
 
 static int	check_coders_done(t_coder **coders)
 {
-	int				i;
-	t_input			*input;
+	int		i;
+	t_input	*input;
 
 	input = coders[0]->input;
 	i = 0;
@@ -42,19 +58,20 @@ static int	check_coders_burnout(t_coder **coders)
 	input = coders[0]->input;
 	i = 0;
 	pthread_mutex_init(&lock, NULL);
-	pthread_mutex_lock(&lock);
 	while (i < input->coders_count)
 	{
+		pthread_mutex_lock(&lock);
 		if (coders[i]->compile_count < input->number_of_compiles_required
 			&& (coders[i]->last_compile + input->time_to_burnout <= get_time(0,
 					input)))
 		{
+			activate_switch(input);
+			wake_up_coders(coders);
 			printf("%ld %d burned out\n", get_time(input->start, input),
 				coders[i]->id);
-			activate_switch(input);
-			pthread_mutex_unlock(&lock);
-			return (1);
+			break ;
 		}
+		pthread_mutex_unlock(&lock);
 		i++;
 	}
 	pthread_mutex_unlock(&lock);
@@ -64,8 +81,8 @@ static int	check_coders_burnout(t_coder **coders)
 
 void	*monitoring(void *arg)
 {
-	t_coder			**coders;
-	t_input			*input;
+	t_coder	**coders;
+	t_input	*input;
 
 	coders = arg;
 	input = coders[0]->input;
