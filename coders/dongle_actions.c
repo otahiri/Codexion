@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <stdio.h>
 
 int	lock_dongle(t_coder *coder, t_dongle *dongle)
 {
@@ -24,13 +23,9 @@ int	lock_dongle(t_coder *coder, t_dongle *dongle)
 			return (1);
 		}
 		dongle->cooldown = -1;
-		if (!pop_smallest(dongle))
-			return (activate_switch(coder->input));
+		pop_smallest(dongle);
 		if (check_switch(coder->input))
-		{
-			printf("heere\n");
 			return (1);
-		}
 		printf("%ld %d has taken a dongle\n", get_time(coder->input->start,
 				coder->input), coder->id);
 		return (1);
@@ -42,9 +37,6 @@ void	acquire_dongle(t_dongle *dongle, t_coder *coder)
 {
 	pthread_mutex_lock(&dongle->lock->mutex);
 	coder->request_time = get_time(0, coder->input);
-	if (coder->request_time == -1 || insert_heap(coder, dongle) == -1
-		|| !coder->input->time_to_burnout)
-		activate_switch(coder->input);
 	if (dongle->cooldown < 0)
 		pthread_cond_wait(&dongle->lock->cond, &dongle->lock->mutex);
 	while (!lock_dongle(coder, dongle))
@@ -58,14 +50,9 @@ void	acquire_dongle(t_dongle *dongle, t_coder *coder)
 
 void	release_dongle(t_dongle *dongle, t_input *input)
 {
-	pthread_mutex_t	lock;
-
-	pthread_mutex_init(&lock, NULL);
-	pthread_mutex_lock(&lock);
+	pthread_mutex_lock(&dongle->lock->mutex);
 	dongle->next_availabe = get_time(0, input) + input->dongle_cooldown;
 	dongle->cooldown = 1;
 	pthread_cond_signal(&dongle->lock->cond);
 	pthread_mutex_unlock(&dongle->lock->mutex);
-	pthread_mutex_unlock(&lock);
-	pthread_mutex_destroy(&lock);
 }

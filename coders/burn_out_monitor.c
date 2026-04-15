@@ -11,7 +11,8 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <pthread.h>
+#include <stdio.h>
+#include <unistd.h>
 
 static void	wake_up_coders(t_coder **coders)
 {
@@ -28,7 +29,7 @@ static void	wake_up_coders(t_coder **coders)
 	}
 }
 
-static int	check_coders_done(t_coder **coders)
+static int	check_coders_done(t_coder **coders, pthread_mutex_t lock)
 {
 	int		i;
 	t_input	*input;
@@ -37,27 +38,25 @@ static int	check_coders_done(t_coder **coders)
 	i = 0;
 	while (i < input->coders_count)
 	{
-		pthread_mutex_lock(&coders[i]->lock);
+		pthread_mutex_lock(&lock);
 		if (coders[i]->compile_count >= input->number_of_compiles_required)
 		{
-			pthread_mutex_unlock(&coders[i]->lock);
+			pthread_mutex_unlock(&lock);
 			return (1);
 		}
-		pthread_mutex_unlock(&coders[i]->lock);
+		pthread_mutex_unlock(&lock);
 		i++;
 	}
 	return (0);
 }
 
-static int	check_coders_burnout(t_coder **coders)
+static int	check_coders_burnout(t_coder **coders, pthread_mutex_t lock)
 {
-	int				i;
-	t_input			*input;
-	pthread_mutex_t	lock;
+	int		i;
+	t_input	*input;
 
 	input = coders[0]->input;
 	i = 0;
-	pthread_mutex_init(&lock, NULL);
 	while (i < input->coders_count)
 	{
 		pthread_mutex_lock(&lock);
@@ -65,32 +64,41 @@ static int	check_coders_burnout(t_coder **coders)
 			&& (coders[i]->last_compile + input->time_to_burnout <= get_time(0,
 					input)))
 		{
-			activate_switch(input);
+			activate_switch(input, ft_strcat(ft_itoa(coders[i]->id),
+					"burned out\n"));
 			wake_up_coders(coders);
-			printf("%ld %d burned out\n", get_time(input->start, input),
-				coders[i]->id);
 			break ;
 		}
 		pthread_mutex_unlock(&lock);
 		i++;
 	}
 	pthread_mutex_unlock(&lock);
-	pthread_mutex_destroy(&lock);
 	return (0);
 }
 
 void	*monitoring(void *arg)
 {
-	t_coder	**coders;
-	t_input	*input;
+	t_coder			**coders;
+	t_input			*input;
+	pthread_mutex_t	lock;
 
 	coders = arg;
 	input = coders[0]->input;
+	pthread_mutex_init(&lock, NULL);
 	while (1)
 	{
-		if (check_coders_done(coders) || check_coders_burnout(coders))
+		if (check_coders_done(coders, lock) || check_coders_burnout(coders,
+				lock))
+		{
 			break ;
+		}
 		usleep(1000);
 	}
+	if (check_switch(input))
+	{
+		printf("%s", input->kill_switch->dialogue);
+		free(input->kill_switch->dialogue);
+	}
+	pthread_mutex_destroy(&lock);
 	return (NULL);
 }

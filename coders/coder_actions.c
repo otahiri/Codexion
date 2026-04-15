@@ -11,13 +11,10 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <bits/pthreadtypes.h>
-#include <pthread.h>
-#include <unistd.h>
 
 void	*run_stages(void *args)
 {
-	t_coder	*coder;
+	t_coder			*coder;
 	pthread_mutex_t	lock;
 
 	pthread_mutex_init(&lock, NULL);
@@ -47,8 +44,7 @@ void	run_coders(t_coder **coders, t_input *input)
 	while (i < input->coders_count)
 	{
 		coders[i]->last_compile = input->start;
-		pthread_create(&coders[i]->coder_thread, NULL, run_stages,
-			coders[i]);
+		pthread_create(&coders[i]->coder_thread, NULL, run_stages, coders[i]);
 		i++;
 	}
 	i = 0;

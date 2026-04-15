@@ -41,8 +41,6 @@ t_coder	*pop_smallest(t_dongle *dongle)
 
 	heap = dongle->heap;
 	smallest = heap->coders[0];
-	if (!smallest)
-		return (NULL);
 	heap->coders[0] = heap->coders[heap->heap_size - 1];
 	heap->coders[heap->heap_size - 1] = NULL;
 	heap->heap_size--;

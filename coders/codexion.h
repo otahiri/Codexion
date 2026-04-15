@@ -107,8 +107,10 @@ void					acquire_dongle(t_dongle *dongle, t_coder *coder);
 void					release_dongle(t_dongle *dongle, t_input *input);
 void					ft_usleep(long timer, t_coder *coder);
 void					*monitoring(void *arg);
-char					*ft_strcpy(const char *src, char *dst);
-int						activate_switch(t_input *input);
+char					*ft_strdup(const char *src);
+char					*ft_strcat(char *s1, char *s2);
+char					*ft_itoa(long n);
+int						activate_switch(t_input *input, char *dialogue);
 int						check_switch(t_input *input);
 
 #endif

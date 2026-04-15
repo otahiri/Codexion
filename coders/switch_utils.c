@@ -12,9 +12,11 @@
 
 #include "codexion.h"
 
-int	activate_switch(t_input *input)
+int	activate_switch(t_input *input, char *dialogue)
 {
 	pthread_mutex_lock(&input->kill_switch->switch_lock);
+	input->kill_switch->dialogue = ft_strcat(ft_itoa(get_time(input->start,
+					input)), ft_strdup(dialogue));
 	input->kill_switch->turn_off++;
 	pthread_mutex_unlock(&input->kill_switch->switch_lock);
 	return (1);

@@ -7,9 +7,9 @@ CFLAGS = -Wall -Werror -Wextra -pthread -g
 
 HEADER = codexion.h
 
-SRCS = actions.c coder_actions.c codexion.c dongle_actions.c \
-       ft_atoi.c extra_utils.c min_heap_actions.c min_heap_utils.c parsing.c burn_out_monitor.c\
-       switch_utils.c
+SRCS = actions.c burn_out_monitor.c coder_actions.c codexion.c\
+	dongle_actions.c ft_atoi.c min_heap_actions.c min_heap_utils.c\
+	parsing.c switch_utils.c utils_one.c utils_two.c
 
 OBJ = $(SRCS:.c=.o)
 

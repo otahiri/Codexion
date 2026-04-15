@@ -17,7 +17,7 @@ void	compile(t_coder *coder)
 	long			time;
 
 	if (coder->left == coder->right)
-		activate_switch(coder->input);
+		activate_switch(coder->input, "1 burned out");
 	if (check_switch(coder->input))
 		return ;
 	acquire_dongle(coder->left, coder);

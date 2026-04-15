@@ -11,8 +11,8 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <pthread.h>
-#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 int	is_valid_number(char *num)
 {
@@ -25,11 +25,13 @@ int	is_valid_number(char *num)
 	return (1);
 }
 
-char	*ft_strcpy(const char *src, char *dst)
+char	*ft_strdup(const char *src)
 {
-	int	i;
+	int		i;
+	char	*dst;
 
 	i = 0;
+	dst = malloc(sizeof(char) * (strlen(src) + 1));
 	while (src[i])
 	{
 		dst[i] = src[i];
@@ -37,6 +39,25 @@ char	*ft_strcpy(const char *src, char *dst)
 	}
 	dst[i] = '\0';
 	return (dst);
+}
+
+char	*ft_strcat(char *s1, char *s2)
+{
+	int		i;
+	int		l;
+	char	*res;
+
+	res = malloc(sizeof(char) * (strlen(s1) + strlen(s2) + 1));
+	i = 0;
+	l = 0;
+	while (s1[i])
+		res[l++] = s1[i++];
+	i = 0;
+	while (s2[i])
+		res[l++] = s2[i++];
+	free(s1);
+	free(s2);
+	return (res);
 }
 
 long	get_time(long time_stamp, t_input *input)
@@ -47,10 +68,8 @@ long	get_time(long time_stamp, t_input *input)
 	res = gettimeofday(&tv, NULL);
 	if (res)
 	{
-		pthread_mutex_lock(&input->kill_switch->switch_lock);
-		input->kill_switch->turn_off = 1;
-		pthread_mutex_unlock(&input->kill_switch->switch_lock);
-		return (-1);
+		activate_switch(input, "gettimeofday failed\n");
+		return (0);
 	}
 	return (((tv.tv_sec * 1000) + (tv.tv_usec / 1000)) - time_stamp);
 }
@@ -67,7 +86,5 @@ void	ft_usleep(long timer, t_coder *coder)
 	ts.tv_nsec %= (1000 * 1000 * 1000);
 	if (check_switch(coder->input))
 		return ;
-	pthread_mutex_lock(&coder->sleep->mutex);
 	pthread_cond_timedwait(&coder->sleep->cond, &coder->sleep->mutex, &ts);
-	pthread_mutex_unlock(&coder->sleep->mutex);
 }
