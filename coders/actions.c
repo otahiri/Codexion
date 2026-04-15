@@ -6,18 +6,19 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/04 08:14:36 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/10 14:41:01 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/15 14:52:56 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <stdio.h>
 
 void	compile(t_coder *coder)
 {
 	long			time;
 
 	if (coder->left == coder->right)
-		activate_switch(coder->input, "1 burned out");
+		activate_switch(coder->input, "1 burned out\n");
 	if (check_switch(coder->input))
 		return ;
 	acquire_dongle(coder->left, coder);

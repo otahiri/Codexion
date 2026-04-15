@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/06 10:47:06 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/10 10:38:07 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/15 14:52:52 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,17 +34,18 @@ t_heap	*create_heap(t_input *input)
 	return (heap);
 }
 
-t_coder	*pop_smallest(t_dongle *dongle)
+void	pop_smallest(t_dongle *dongle)
 {
 	t_coder	*smallest;
 	t_heap	*heap;
 
+	pthread_mutex_lock(&dongle->lock->mutex);
 	heap = dongle->heap;
 	smallest = heap->coders[0];
 	heap->coders[0] = heap->coders[heap->heap_size - 1];
 	heap->coders[heap->heap_size - 1] = NULL;
 	heap->heap_size--;
-	return (smallest);
+	pthread_mutex_unlock(&dongle->lock->mutex);
 }
 
 int	insert_heap(t_coder *coder, t_dongle *dongle)

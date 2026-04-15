@@ -65,7 +65,7 @@ static int	check_coders_burnout(t_coder **coders, pthread_mutex_t lock)
 					input)))
 		{
 			activate_switch(input, ft_strcat(ft_itoa(coders[i]->id),
-					"burned out\n"));
+					" burned out\n"));
 			wake_up_coders(coders);
 			break ;
 		}
@@ -97,7 +97,6 @@ void	*monitoring(void *arg)
 	if (check_switch(input))
 	{
 		printf("%s", input->kill_switch->dialogue);
-		free(input->kill_switch->dialogue);
 	}
 	pthread_mutex_destroy(&lock);
 	return (NULL);

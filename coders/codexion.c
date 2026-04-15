@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <stdlib.h>
 
 void	*free_all(t_coder **coders, t_input *input)
 {

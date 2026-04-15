@@ -11,8 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <stdlib.h>
-#include <string.h>
 
 int	is_valid_number(char *num)
 {
@@ -47,16 +45,15 @@ char	*ft_strcat(char *s1, char *s2)
 	int		l;
 	char	*res;
 
-	res = malloc(sizeof(char) * (strlen(s1) + strlen(s2) + 1));
+	res = malloc(sizeof(char) * (strlen(s1) + strlen(s2) + 2));
 	i = 0;
 	l = 0;
 	while (s1[i])
 		res[l++] = s1[i++];
+	res[l++] = ' ';
 	i = 0;
 	while (s2[i])
 		res[l++] = s2[i++];
-	free(s1);
-	free(s2);
 	return (res);
 }
 

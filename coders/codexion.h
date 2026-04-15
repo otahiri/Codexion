@@ -100,7 +100,7 @@ long					get_time(long time_stamp, t_input *input);
 void					heapify_up(t_heap *heap);
 void					heapify_down(t_heap *heap, int idx);
 t_heap					*create_heap(t_input *input);
-t_coder					*pop_smallest(t_dongle *dongle);
+void					pop_smallest(t_dongle *dongle);
 t_coder					*peak_top(t_dongle *dongle);
 int						insert_heap(t_coder *coder, t_dongle *dongle);
 void					acquire_dongle(t_dongle *dongle, t_coder *coder);
