@@ -5,112 +5,73 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/02 11:03:26 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/10 10:37:16 by otahiri-         ###   ########.fr       */
+/*   Created: 2026/04/16 16:15:09 by otahiri-          #+#    #+#             */
+/*   Updated: 2026/04/16 16:33:11 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CODEXION_H
 # define CODEXION_H
 
+# include "stdio.h"
+# include "stdlib.h"
+# include "string.h"
+# include "unistd.h"
 # include <pthread.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
-# include <sys/time.h>
-# include <unistd.h>
 
-typedef struct s_coder	t_coder;
-typedef struct s_dongle	t_dongle;
-typedef struct s_mutex	t_mutex;
-typedef struct s_heap	t_heap;
-typedef struct s_off	t_off;
+typedef struct s_coder		t_coder;
+typedef struct s_input		t_input;
+typedef struct s_simulation	t_simulation;
+typedef struct s_dongle		t_dongle;
+typedef struct s_heap		t_heap;
+typedef struct s_mutex		t_mutex;
+typedef struct s_off		t_off;
 
-struct					s_off
+struct						s_input
 {
-	int					turn_off;
-	pthread_mutex_t		switch_lock;
-	pthread_mutex_t		monitoring_lock;
-
-	char				*dialogue;
+	int						number_of_coders;
+	int						time_to_burnout;
+	int						time_to_compile;
+	int						time_to_debug;
+	int						time_to_refactor;
+	int						number_of_compiles_required;
+	int						dongle_cooldown;
+	char					*scheduler;
 };
 
-typedef struct s_input
+struct						s_mutex
 {
-	int					coders_count;
-	int					time_to_burnout;
-	int					time_to_compile;
-	int					time_to_refactor;
-	int					time_to_debug;
-	int					number_of_compiles_required;
-	int					dongle_cooldown;
-	char				*scheduler;
-	long				start;
-	t_off				*kill_switch;
-}						t_input;
-
-struct					s_coder
-{
-	int					id;
-	int					compile_count;
-	t_input				*input;
-	pthread_t			coder_thread;
-	t_dongle			*left;
-	t_dongle			*right;
-	long				last_compile;
-	long				request_time;
-	t_mutex				*sleep;
-	pthread_mutex_t		lock;
+	pthread_mutex_t			mutex;
+	pthread_cond_t			cond;
 };
 
-struct					s_mutex
+struct						s_heap
 {
-	pthread_mutex_t		mutex;
-	pthread_cond_t		cond;
+	t_coder					**coders;
+	int						size;
+	int						cap;
+	t_mutex			*sleep;
+	t_input			*input;
 };
 
-struct					s_dongle
+struct						s_dongle
 {
-	t_mutex				*lock;
-	t_heap				*heap;
-	long				cooldown;
-	long				down_time;
-	long				next_availabe;
+	t_mutex					*lock;
+	int						cooldown;
+	s_heap					*heap;
+	long					next_available;
 };
 
-struct					s_heap
+typedef struct s_monitoring
 {
-	t_coder				**coders;
-	int					heap_size;
-	int					heap_cap;
-};
+	t_simulation	*simulation;
+	t_mutex		*lock;
+}							t_monitoring;
 
-int						ft_atoi(char *num);
-int						is_space(char c);
-int						ft_isdigit(char c);
-t_input					*parse_input(char **argv, int argc);
-int						ft_isdigit(char c);
-int						is_valid_number(char *num);
-void					run_coders(t_coder **coders, t_input *input);
-void					*run_stages(void *args);
-void					compile(t_coder *coder);
-void					refactor(t_coder *coder);
-void					debug(t_coder *coder);
-long					get_time(long time_stamp, t_input *input);
-void					heapify_up(t_heap *heap);
-void					heapify_down(t_heap *heap, int idx);
-t_heap					*create_heap(t_input *input);
-void					pop_smallest(t_dongle *dongle);
-t_coder					*peak_top(t_dongle *dongle);
-int						insert_heap(t_coder *coder, t_dongle *dongle);
-void					acquire_dongle(t_dongle *dongle, t_coder *coder);
-void					release_dongle(t_dongle *dongle, t_input *input);
-void					ft_usleep(long timer, t_coder *coder);
-void					*monitoring(void *arg);
-char					*ft_strdup(const char *src);
-char					*ft_strcat(char *s1, char *s2);
-char					*ft_itoa(long n);
-int						activate_switch(t_input *input, char *dialogue);
-int						check_switch(t_input *input);
+struct						s_off
+{
+	pthread_mutex_t			lock;
+	int						off;
+};
 
 #endif
