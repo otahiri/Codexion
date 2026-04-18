@@ -6,38 +6,64 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 16:14:23 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/18 10:18:27 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/18 15:51:43 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <stdio.h>
-#include <unistd.h>
+#include <pthread.h>
+
+t_coder	**initialize_coders(t_input *input)
+{
+	t_coder	**coders;
+	int		i;
+
+	i = 0;
+	coders = malloc(sizeof(t_coder) * input->number_of_coders);
+	if (!coders)
+		return (NULL);
+	while (i < input->number_of_coders)
+	{
+		coders[i] = create_coder(input, i + 1);
+		i++;
+	}
+	i = 0;
+	while (i < input->number_of_coders)
+	{
+		coders[i]->left = coders[(i + input->number_of_coders + 1)
+			% input->number_of_coders]->right;
+		i++;
+	}
+	return (coders);
+}
+
+void	start_sim(t_coder **coders, t_input *input)
+{
+	int	i;
+
+	i = 0;
+	while (i < input->number_of_coders)
+	{
+		pthread_create(&coders[i]->thread, NULL, run_stages, coders[i]);
+		i++;
+	}
+	i = 0;
+	while (i < input->number_of_coders)
+	{
+		pthread_join(coders[i]->thread, NULL);
+		i++;
+	}
+}
 
 int	main(int argc, char **argv)
 {
-	t_coder	*codera;
-	t_coder	*coderb;
-	t_coder	*coderc;
+	t_coder	**coders;
 	t_input	*input;
-	t_heap	*heap;
 
 	input = parse_input(argv, argc);
 	if (!input)
 		return (0);
 	input->start = get_time(0, input);
-	heap = create_heap(input);
-	codera = create_coder(input, 1);
-	coderb = create_coder(input, 2);
-	coderc = create_coder(input, 3);
-	coderc->request = get_time(input->start, input);
-	usleep(5000);
-	codera->request = get_time(input->start, input);
-	usleep(5000);
-	coderb->request = get_time(input->start, input);
-	heap_insert(heap, coderb, input);
-	heap_insert(heap, codera, input);
-	heap_insert(heap, coderc, input);
-	for (int i = 0; i < 3; i++)
-		printf("coder %d time is %ld\n", heap->coders[i]->id, heap->coders[i]->request);
+	coders = initialize_coders(input);
+	start_sim(coders, input);
 }

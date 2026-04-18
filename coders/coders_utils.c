@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/18 10:00:56 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/18 10:13:24 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/18 15:11:37 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,13 @@ t_coder	*create_coder(t_input *input, int id)
 		return (NULL);
 	coder->compiles_done = 0;
 	coder->id = id;
-	coder->sleep = malloc(sizeof(t_mutex));
+	coder->sleep = create_mutex();
 	if (!coder->sleep)
 	{
 		free(coder);
 		return (NULL);
 	}
-	coder->lock = malloc(sizeof(t_mutex));
+	coder->lock = create_mutex();
 	if (!coder->lock)
 	{
 		free(coder->sleep);

@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 16:15:09 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/18 10:15:54 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/18 16:00:50 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,17 @@ void					heap_pop(t_heap *heap, t_input *input);
 void					heap_insert(t_heap *heap, t_coder *coder,
 							t_input *input);
 t_input					*parse_input(char **argv, int argc);
-t_coder	*create_coder(t_input *input, int id);
-t_dongle	*create_dongle(t_input *input);
+t_coder					*create_coder(t_input *input, int id);
+t_dongle				*create_dongle(t_input *input);
+long					longest_wait(t_dongle *left, t_dongle *right,
+							t_input *input);
+void					cond_wait(t_coder *coder);
+void					unlock_mutex(t_coder *coder);
+void					lock_mutex(t_coder *coder);
+int						lock_dongles(t_coder *coder, t_input *input);
+t_mutex					*create_mutex(void);
+void					aquire_dongles(t_coder *coder, t_input *input);
+void					release_dongle(t_coder *coder, t_input *input);
+void					*run_stages(void *args);
 
 #endif

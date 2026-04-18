@@ -5,57 +5,40 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/18 10:06:47 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/18 10:12:03 by otahiri-         ###   ########.fr       */
+/*   Created: 2026/04/18 14:44:40 by otahiri-          #+#    #+#             */
+/*   Updated: 2026/04/18 16:03:07 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <unistd.h>
 
-t_dongle	*create_dongle(t_input *input)
+long	longest_wait(t_dongle *left, t_dongle *right, t_input *input)
 {
-	t_dongle	*dongle;
-
-	dongle = malloc(sizeof(t_dongle));
-	if (!dongle)
-		return (NULL);
-	dongle->cooldown = 1;
-	dongle->heap = create_heap(input);
-	if (!dongle->heap)
-	{
-		free(dongle);
-		return (NULL);
-	}
-	dongle->lock = malloc(sizeof(t_mutex));
-	if (!dongle->lock)
-	{
-		free(dongle->heap);
-		free(dongle);
-		return (NULL);
-	}
-	dongle->next_available = get_time(0, input);
-	return (dongle);
+	if (left->next_available > right->next_available)
+		return (left->next_available - get_time(0, input));
+	else
+		return (right->next_available - get_time(0, input));
 }
 
-long	longest
-
-int	lock_dongle(t_coder *coder)
+void	cond_wait(t_coder *coder)
 {
-	long	wait_left;
-	long	wait_right;
-	long	longest;
-
-	if (coder->left->cooldown > 0 && coder->right->cooldown > 0)
-	{
-		wait_left = coder->left->next_available - get_time(0, coder->input);
-		wait_right = coder->right->next_available - get_time(0, coder->input);
-		if
-		coder->left->cooldown = -1
-
-	}
+	if (coder->left->cooldown < 0)
+		pthread_cond_wait(&coder->left->lock->cond, &coder->left->lock->mutex);
+	else if (coder->right->cooldown < 0)
+		pthread_cond_wait(&coder->right->lock->cond,
+			&coder->right->lock->mutex);
+	usleep(10000);
 }
 
-void	aquire_dongles(t_coder *coder)
+void	unlock_mutex(t_coder *coder)
 {
-	
+	pthread_mutex_unlock(&coder->left->lock->mutex);
+	pthread_mutex_unlock(&coder->right->lock->mutex);
+}
+
+void	lock_mutex(t_coder *coder)
+{
+	pthread_mutex_lock(&coder->left->lock->mutex);
+	pthread_mutex_lock(&coder->right->lock->mutex);
 }
