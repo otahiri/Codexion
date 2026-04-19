@@ -43,10 +43,10 @@ int	lock_dongles(t_coder *coder)
 {
 	long	wait;
 	t_input	*input;
-	int	left_cooldown;
-	int	right_cooldown;
-	int	left_next;
-	int	right_next;
+	long	left_cooldown;
+	long	right_cooldown;
+	long	left_next;
+	long	right_next;
 
 	pthread_mutex_lock(&coder->left->lock->mutex);
 	left_cooldown = coder->left->cooldown;

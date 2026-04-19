@@ -61,10 +61,9 @@ char	*ft_strcat(char *s1, char *s2)
 long	get_time(long time_stamp, t_input *input)
 {
 	struct timeval	tv;
-	int				res;
 
-	input = NULL;
-	res = gettimeofday(&tv, NULL);
+	(void)input;
+	gettimeofday(&tv, NULL);
 	return (((tv.tv_sec * 1000) + (tv.tv_usec / 1000)) - time_stamp);
 }
 

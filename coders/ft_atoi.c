@@ -24,12 +24,10 @@ int	ft_isdigit(char c)
 
 int	ft_atoi(char *num)
 {
-	int	sign;
 	int	res;
 	int	digit;
 
 	res = 0;
-	sign = 1;
 	while (*num && is_space(*num))
 		num++;
 	if (*num == '+')
