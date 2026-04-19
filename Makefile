@@ -2,8 +2,7 @@ NAME = codexion
 
 CC = cc
 
-CFLAGS = -Wall -Werror -Wextra -pthread -g 
-# -fsanitize=thread
+CFLAGS = -Wall -Werror -Wextra -pthread -g -fsanitize=thread
 
 HEADER = coders/codexion.h
 

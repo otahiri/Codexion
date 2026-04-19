@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <unistd.h>
+#include <pthread.h>
 
 long	longest_wait(t_dongle *left, t_dongle *right, t_input *input)
 {
@@ -28,17 +28,25 @@ void	cond_wait(t_coder *coder)
 	else if (coder->right->cooldown < 0)
 		pthread_cond_wait(&coder->right->lock->cond,
 			&coder->right->lock->mutex);
-	usleep(10000);
 }
 
-void	unlock_mutex(t_coder *coder)
+void	set_cooldown(t_coder *coder, t_input *input)
 {
-	pthread_mutex_unlock(&coder->left->lock->mutex);
-	pthread_mutex_unlock(&coder->right->lock->mutex);
+	printf("%ld %d taken a dongle\n", get_time(input->start, input),
+		coder->id);
+	printf("%ld %d taken a dongle\n", get_time(input->start, input),
+		coder->id);
+	revers_cooldown(coder);
 }
 
-void	lock_mutex(t_coder *coder)
+void	revers_cooldown(t_coder *coder)
 {
-	pthread_mutex_lock(&coder->left->lock->mutex);
-	pthread_mutex_lock(&coder->right->lock->mutex);
+	pthread_mutex_t	lock;
+
+	pthread_mutex_init(&lock, NULL);
+	pthread_mutex_lock(&lock);
+	coder->right->cooldown = -coder->right->cooldown;
+	coder->left->cooldown = -coder->left->cooldown;
+	pthread_mutex_unlock(&lock);
+	pthread_mutex_destroy(&lock);
 }

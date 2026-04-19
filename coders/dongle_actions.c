@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/18 16:02:54 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/18 16:02:57 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/19 11:30:20 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,53 +40,66 @@ t_dongle	*create_dongle(t_input *input)
 
 int	lock_dongles(t_coder *coder, t_input *input)
 {
-	lock_mutex(coder);
-	if (coder->left->cooldown > 0 && coder->right->cooldown > 0)
+	long			wait;
+	pthread_mutex_t	lock;
+
+	pthread_mutex_init(&lock, NULL);
+	pthread_mutex_lock(&lock);
+	if (coder->left->cooldown > 0 && coder->right->cooldown > 0
+		&& peak(coder->left) == coder->id && peak(coder->right) == coder->id)
 	{
 		if (coder->left->next_available > get_time(0, input)
 			|| coder->right->next_available > get_time(0, input))
 		{
-			unlock_mutex(coder);
-			ft_usleep(longest_wait(coder->left, coder->right, input),
-					coder);
+			wait = longest_wait(coder->left, coder->right, input);
+			pthread_mutex_unlock(&lock);
+			ft_usleep(wait, coder);
 			return (0);
 		}
-		coder->left->cooldown = -1;
-		printf("%ld %d taken a dongle\n", get_time(input->start, input), coder->id);
-		coder->right->cooldown = -1;
-		printf("%ld %d taken a dongle\n", get_time(input->start, input), coder->id);
-		unlock_mutex(coder);
+		pthread_mutex_unlock(&lock);
+		set_cooldown(coder, input);
 		return (1);
 	}
-	else
-	{
-		unlock_mutex(coder);
-		cond_wait(coder);
-		return (0);
-	}
+	cond_wait(coder);
+	pthread_mutex_unlock(&lock);
+	pthread_mutex_destroy(&lock);
+	return (0);
 }
 
-void	aquire_dongles(t_coder *coder, t_input *input)
+void	aquire_dongles(t_coder *coder)
 {
-	heap_insert(coder->left->heap, coder, input);
-	heap_insert(coder->right->heap, coder, input);
+	t_input			*input;
+	pthread_mutex_t	lock;
+
+	pthread_mutex_init(&lock, NULL);
+	pthread_mutex_lock(&lock);
+	input = coder->input;
+	heap_insert(coder, input);
+	pthread_mutex_unlock(&lock);
 	while (1)
 	{
 		if (lock_dongles(coder, input))
 			break ;
 	}
-	heap_pop(coder->left->heap, input);
-	heap_pop(coder->right->heap, input);
+	pthread_mutex_lock(&lock);
+	heap_pop(coder, input);
+	pthread_mutex_unlock(&lock);
+	pthread_mutex_destroy(&lock);
 }
 
-void	release_dongle(t_coder *coder, t_input *input)
+void	release_dongle(t_coder *coder)
 {
-	lock_mutex(coder);
-	coder->left->cooldown = 1;
-	coder->right->cooldown = 1;
+	t_input			*input;
+	pthread_mutex_t	lock;
+
+	pthread_mutex_init(&lock, NULL);
+	pthread_mutex_lock(&lock);
+	input = coder->input;
+	revers_cooldown(coder);
 	coder->left->next_available = get_time(0, input) + input->dongle_cooldown;
 	coder->right->next_available = get_time(0, input) + input->dongle_cooldown;
-	unlock_mutex(coder);
-	pthread_cond_broadcast(&coder->left->lock->cond);
+	pthread_mutex_unlock(&lock);
+	pthread_mutex_destroy(&lock);
 	pthread_cond_broadcast(&coder->right->lock->cond);
+	pthread_cond_broadcast(&coder->left->lock->cond);
 }

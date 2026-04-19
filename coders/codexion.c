@@ -11,13 +11,17 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <bits/pthreadtypes.h>
 #include <pthread.h>
 
 t_coder	**initialize_coders(t_input *input)
 {
-	t_coder	**coders;
-	int		i;
+	t_coder			**coders;
+	int				i;
+	pthread_mutex_t	lock;
 
+	pthread_mutex_init(&lock, NULL);
+	pthread_mutex_lock(&lock);
 	i = 0;
 	coders = malloc(sizeof(t_coder) * input->number_of_coders);
 	if (!coders)
@@ -34,6 +38,8 @@ t_coder	**initialize_coders(t_input *input)
 			% input->number_of_coders]->right;
 		i++;
 	}
+	pthread_mutex_unlock(&lock);
+	pthread_mutex_destroy(&lock);
 	return (coders);
 }
 
