@@ -111,8 +111,7 @@ int						peak(t_dongle *dongle);
 t_input					*parse_input(char **argv, int argc);
 t_coder					*create_coder(t_input *input, int id);
 t_dongle				*create_dongle(t_input *input);
-long					longest_wait(t_dongle *left, t_dongle *right,
-							t_input *input);
+long					longest_wait(t_coder *coder, t_input *input);
 void					cond_wait(t_coder *coder);
 int						lock_dongles(t_coder *coder);
 t_mutex					*create_mutex(void);
@@ -120,6 +119,6 @@ void					aquire_dongles(t_coder *coder);
 void					release_dongle(t_coder *coder);
 void					*run_stages(void *args);
 void					set_cooldown(t_coder *coder, t_input *input);
-void					revers_cooldown(t_coder *coder);
+void					reverse_cooldown(t_coder *coder);
 
 #endif

@@ -31,14 +31,10 @@ void	*run_stages(void *args)
 	t_input			*input;
 	t_coder			*coder;
 	int				id;
-	pthread_mutex_t	lock;
 
 	coder = args;
-	pthread_mutex_init(&lock, NULL);
-	pthread_mutex_lock(&lock);
 	input = coder->input;
 	id = coder->id;
-	pthread_mutex_unlock(&lock);
 	if (!(id % 2))
 		usleep(1000);
 	while (coder->compiles_done < input->number_of_compiles_required)
@@ -46,6 +42,5 @@ void	*run_stages(void *args)
 		compile(coder);
 		coder->compiles_done++;
 	}
-	pthread_mutex_destroy(&lock);
 	return (NULL);
 }

@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <pthread.h>
 
 t_dongle	*create_dongle(t_input *input)
 {
@@ -40,28 +41,36 @@ t_dongle	*create_dongle(t_input *input)
 
 int	lock_dongles(t_coder *coder)
 {
-	long		wait;
-	t_input		*input;
-	t_dongle	*left;
-	t_dongle	*right;
+	long	wait;
+	t_input	*input;
+	int	left_cooldown;
+	int	right_cooldown;
+	int	left_next;
+	int	right_next;
 
+	pthread_mutex_lock(&coder->left->lock->mutex);
+	left_cooldown = coder->left->cooldown;
+	left_next = coder->left->next_available;
+	pthread_mutex_unlock(&coder->left->lock->mutex);
+	pthread_mutex_lock(&coder->right->lock->mutex);
+	right_cooldown = coder->right->cooldown;
+	right_next = coder->right->next_available;
+	pthread_mutex_unlock(&coder->right->lock->mutex);
 	pthread_mutex_lock(&coder->lock->mutex);
-	left = coder->left;
-	right = coder->right;
 	input = coder->input;
-	if (left->cooldown > 0 && right->cooldown > 0 && peak(left) == coder->id
-		&& peak(right) == coder->id)
+	if (left_cooldown > 0 && right_cooldown > 0
+		&& peak(coder->left) == coder->id && peak(coder->right) == coder->id)
 	{
-		if (left->next_available > get_time(0, input)
-			|| right->next_available > get_time(0, input))
+		if (left_next > get_time(0, input)
+			|| right_next > get_time(0, input))
 		{
-			wait = longest_wait(left, right, input);
 			pthread_mutex_unlock(&coder->lock->mutex);
+			wait = longest_wait(coder, input);
 			ft_usleep(wait, coder);
 			return (0);
 		}
-		pthread_mutex_unlock(&coder->lock->mutex);
 		set_cooldown(coder, input);
+		pthread_mutex_unlock(&coder->lock->mutex);
 		return (1);
 	}
 	cond_wait(coder);
@@ -82,18 +91,18 @@ void	aquire_dongles(t_coder *coder)
 
 void	release_dongle(t_coder *coder)
 {
-	t_input		*input;
-	t_dongle	*left;
-	t_dongle	*right;
+	t_input			*input;
 
 	pthread_mutex_lock(&coder->lock->mutex);
-	left = coder->left;
-	right = coder->right;
 	input = coder->input;
-	revers_cooldown(coder);
-	left->next_available = get_time(0, input) + input->dongle_cooldown;
-	right->next_available = get_time(0, input) + input->dongle_cooldown;
+	reverse_cooldown(coder);
+	pthread_mutex_lock(&coder->left->lock->mutex);
+	coder->left->next_available = get_time(0, input) + input->dongle_cooldown;
+	pthread_mutex_unlock(&coder->left->lock->mutex);
+	pthread_mutex_lock(&coder->right->lock->mutex);
+	coder->right->next_available = get_time(0, input) + input->dongle_cooldown;
+	pthread_mutex_unlock(&coder->right->lock->mutex);
+	pthread_cond_signal(&coder->right->lock->cond);
+	pthread_cond_signal(&coder->left->lock->cond);
 	pthread_mutex_unlock(&coder->lock->mutex);
-	pthread_cond_broadcast(&right->lock->cond);
-	pthread_cond_broadcast(&left->lock->cond);
 }
