@@ -11,7 +11,10 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <pthread.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 t_heap	*create_heap(t_input *input)
 {
@@ -37,36 +40,58 @@ t_heap	*create_heap(t_input *input)
 	return (heap);
 }
 
-void	heap_pop(t_coder *coder, t_input *input)
+void	heap_pop(t_coder *coder)
 {
-	t_heap	*left;
-	t_heap	*right;
+	t_dongle		*left;
+	t_dongle		*right;
+	t_input			*input;
+	pthread_mutex_t	lock;
 
-	left = coder->left->heap;
-	right = coder->right->heap;
-	left->size--;
-	right->size--;
-	left->coders[0] = left->coders[left->size];
-	right->coders[0] = right->coders[right->size];
-	left->coders[left->size] = NULL;
-	right->coders[right->size] = NULL;
-	heapify_down(left, input);
-	heapify_down(right, input);
+	pthread_mutex_init(&lock, NULL);
+	pthread_mutex_lock(&lock);
+	left = coder->left;
+	right = coder->right;
+	input = coder->input;
+	pthread_mutex_unlock(&lock);
+	pthread_mutex_lock(&left->lock->mutex);
+	pthread_mutex_lock(&right->lock->mutex);
+	printf("%p is left and %p is right\n", (void *)&left->lock->mutex,
+		(void *)&right->lock->mutex);
+	left->heap->size--;
+	right->heap->size--;
+	left->heap->coders[0] = left->heap->coders[left->heap->size];
+	right->heap->coders[0] = right->heap->coders[right->heap->size];
+	left->heap->coders[left->heap->size] = NULL;
+	right->heap->coders[right->heap->size] = NULL;
+	heapify_down(left->heap, input);
+	heapify_down(right->heap, input);
+	pthread_mutex_unlock(&right->lock->mutex);
+	pthread_mutex_unlock(&left->lock->mutex);
 }
 
-void	heap_insert(t_coder *coder, t_input *input)
+void	heap_insert(t_coder *coder)
 {
-	t_heap	*left;
-	t_heap	*right;
+	t_dongle		*left;
+	t_dongle		*right;
+	t_input			*input;
+	pthread_mutex_t	lock;
 
-	left = coder->left->heap;
-	right = coder->right->heap;
-	left->coders[left->size] = coder;
-	left->size++;
-	heapify_up(left, input);
-	right->coders[right->size] = coder;
-	right->size++;
-	heapify_up(right, input);
+	pthread_mutex_init(&lock, NULL);
+	pthread_mutex_lock(&lock);
+	left = coder->left;
+	right = coder->right;
+	input = coder->input;
+	pthread_mutex_unlock(&lock);
+	pthread_mutex_lock(&right->lock->mutex);
+	pthread_mutex_lock(&left->lock->mutex);
+	left->heap->coders[left->heap->size] = coder;
+	left->heap->size++;
+	heapify_up(left->heap, input);
+	right->heap->coders[right->heap->size] = coder;
+	right->heap->size++;
+	heapify_up(right->heap, input);
+	pthread_mutex_unlock(&left->lock->mutex);
+	pthread_mutex_unlock(&right->lock->mutex);
 }
 
 int	peak(t_dongle *dongle)

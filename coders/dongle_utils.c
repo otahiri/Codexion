@@ -32,21 +32,17 @@ void	cond_wait(t_coder *coder)
 
 void	set_cooldown(t_coder *coder, t_input *input)
 {
+	pthread_mutex_lock(&coder->lock->mutex);
 	printf("%ld %d taken a dongle\n", get_time(input->start, input),
 		coder->id);
 	printf("%ld %d taken a dongle\n", get_time(input->start, input),
 		coder->id);
 	revers_cooldown(coder);
+	pthread_mutex_unlock(&coder->lock->mutex);
 }
 
 void	revers_cooldown(t_coder *coder)
 {
-	pthread_mutex_t	lock;
-
-	pthread_mutex_init(&lock, NULL);
-	pthread_mutex_lock(&lock);
-	coder->right->cooldown = -coder->right->cooldown;
-	coder->left->cooldown = -coder->left->cooldown;
-	pthread_mutex_unlock(&lock);
-	pthread_mutex_destroy(&lock);
+	coder->right->cooldown = coder->right->cooldown;
+	coder->left->cooldown = coder->left->cooldown;
 }

@@ -38,68 +38,62 @@ t_dongle	*create_dongle(t_input *input)
 	return (dongle);
 }
 
-int	lock_dongles(t_coder *coder, t_input *input)
+int	lock_dongles(t_coder *coder)
 {
-	long			wait;
-	pthread_mutex_t	lock;
+	long		wait;
+	t_input		*input;
+	t_dongle	*left;
+	t_dongle	*right;
 
-	pthread_mutex_init(&lock, NULL);
-	pthread_mutex_lock(&lock);
-	if (coder->left->cooldown > 0 && coder->right->cooldown > 0
-		&& peak(coder->left) == coder->id && peak(coder->right) == coder->id)
+	pthread_mutex_lock(&coder->lock->mutex);
+	left = coder->left;
+	right = coder->right;
+	input = coder->input;
+	if (left->cooldown > 0 && right->cooldown > 0 && peak(left) == coder->id
+		&& peak(right) == coder->id)
 	{
-		if (coder->left->next_available > get_time(0, input)
-			|| coder->right->next_available > get_time(0, input))
+		if (left->next_available > get_time(0, input)
+			|| right->next_available > get_time(0, input))
 		{
-			wait = longest_wait(coder->left, coder->right, input);
-			pthread_mutex_unlock(&lock);
+			wait = longest_wait(left, right, input);
+			pthread_mutex_unlock(&coder->lock->mutex);
 			ft_usleep(wait, coder);
 			return (0);
 		}
-		pthread_mutex_unlock(&lock);
+		pthread_mutex_unlock(&coder->lock->mutex);
 		set_cooldown(coder, input);
 		return (1);
 	}
 	cond_wait(coder);
-	pthread_mutex_unlock(&lock);
-	pthread_mutex_destroy(&lock);
+	pthread_mutex_unlock(&coder->lock->mutex);
 	return (0);
 }
 
 void	aquire_dongles(t_coder *coder)
 {
-	t_input			*input;
-	pthread_mutex_t	lock;
-
-	pthread_mutex_init(&lock, NULL);
-	pthread_mutex_lock(&lock);
-	input = coder->input;
-	heap_insert(coder, input);
-	pthread_mutex_unlock(&lock);
+	heap_insert(coder);
 	while (1)
 	{
-		if (lock_dongles(coder, input))
+		if (lock_dongles(coder))
 			break ;
 	}
-	pthread_mutex_lock(&lock);
-	heap_pop(coder, input);
-	pthread_mutex_unlock(&lock);
-	pthread_mutex_destroy(&lock);
+	heap_pop(coder);
 }
 
 void	release_dongle(t_coder *coder)
 {
-	t_input			*input;
-	pthread_mutex_t	lock;
+	t_input		*input;
+	t_dongle	*left;
+	t_dongle	*right;
 
-	pthread_mutex_init(&lock, NULL);
-	pthread_mutex_lock(&lock);
+	pthread_mutex_lock(&coder->lock->mutex);
+	left = coder->left;
+	right = coder->right;
 	input = coder->input;
 	revers_cooldown(coder);
-	coder->left->next_available = get_time(0, input) + input->dongle_cooldown;
-	coder->right->next_available = get_time(0, input) + input->dongle_cooldown;
-	pthread_mutex_unlock(&lock);
-	pthread_mutex_destroy(&lock);
-	pthread_cond_broadcast(&coder->right->lock->cond);
-	pthread_cond_broadcast(&coder->left->lock->cond);
+	left->next_available = get_time(0, input) + input->dongle_cooldown;
+	right->next_available = get_time(0, input) + input->dongle_cooldown;
+	pthread_mutex_unlock(&coder->lock->mutex);
+	pthread_cond_broadcast(&right->lock->cond);
+	pthread_cond_broadcast(&left->lock->cond);
 }
