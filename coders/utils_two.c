@@ -36,6 +36,7 @@ void	free_dongle(t_dongle *dongle)
 {
 	free_heap(dongle->heap);
 	free_mutex(dongle->lock);
+	dongle->lock = NULL;
 	free(dongle);
 }
 

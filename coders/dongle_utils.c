@@ -50,11 +50,8 @@ void	cond_wait(t_coder *coder)
 		pthread_cond_wait(&coder->left->lock->cond, &coder->left->lock->mutex);
 	}
 	else if (right_cooldown < 0)
-	{
-		printf("here\n");
 		pthread_cond_wait(&coder->right->lock->cond,
 			&coder->right->lock->mutex);
-	}
 }
 
 void	set_cooldown(t_coder *coder, t_input *input)

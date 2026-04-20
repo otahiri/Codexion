@@ -36,7 +36,6 @@ t_dongle	*create_dongle(t_input *input)
 		return (NULL);
 	}
 	dongle->next_available = get_time(0, input);
-	dongle->lock = create_mutex();
 	return (dongle);
 }
 
