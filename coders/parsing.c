@@ -55,7 +55,7 @@ t_input	*parse_input(char **argv, int argc)
 	input->time_to_refactor = ft_atoi(argv[5]);
 	input->number_of_compiles_required = ft_atoi(argv[6]);
 	input->dongle_cooldown = ft_atoi(argv[7]);
-	input->scheduler = argv[8];
+	input->scheduler = ft_strdup(argv[8]);
 	if (!is_input_valid(input))
 	{
 		free(input);

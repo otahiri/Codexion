@@ -11,8 +11,7 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <bits/pthreadtypes.h>
-#include <pthread.h>
+#include <stdlib.h>
 
 t_coder	**initialize_coders(t_input *input)
 {
@@ -41,6 +40,18 @@ t_coder	**initialize_coders(t_input *input)
 	pthread_mutex_unlock(&lock);
 	pthread_mutex_destroy(&lock);
 	return (coders);
+}
+
+void	free_all(t_coder **coders, t_input *input)
+{
+	int	i;
+
+	i = 0;
+	while (i < input->number_of_coders)
+		free_coder(coders[i++]);
+	free(coders);
+	free(input->scheduler);
+	free(input);
 }
 
 void	start_sim(t_coder **coders, t_input *input)
@@ -72,4 +83,5 @@ int	main(int argc, char **argv)
 	input->start = get_time(0, input);
 	coders = initialize_coders(input);
 	start_sim(coders, input);
+	free_all(coders, input);
 }

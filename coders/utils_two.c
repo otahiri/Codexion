@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <stdlib.h>
 
 t_mutex	*create_mutex(void)
 {
@@ -29,4 +30,18 @@ void	free_mutex(t_mutex *mutex)
 	pthread_mutex_destroy(&mutex->mutex);
 	pthread_cond_destroy(&mutex->cond);
 	free(mutex);
+}
+
+void	free_dongle(t_dongle *dongle)
+{
+	free_heap(dongle->heap);
+	free_mutex(dongle->lock);
+	free(dongle);
+}
+
+void	free_heap(t_heap *heap)
+{
+	free(heap->coders);
+	free_mutex(heap->sleep);
+	free(heap);
 }

@@ -36,6 +36,15 @@ t_coder	*create_coder(t_input *input, int id)
 	}
 	coder->input = input;
 	coder->request = get_time(input->start, input);
+	coder->last_compile = get_time(input->start, input);
 	coder->right = create_dongle(input);
 	return (coder);
+}
+
+void	free_coder(t_coder *coder)
+{
+	free_mutex(coder->sleep);
+	free_mutex(coder->lock);
+	free_dongle(coder->right);
+	free(coder);
 }

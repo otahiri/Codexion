@@ -51,9 +51,7 @@ struct					s_heap
 {
 	t_coder				**coders;
 	int					size;
-	int					cap;
 	t_mutex				*sleep;
-	t_input				*input;
 };
 
 struct					s_dongle
@@ -120,5 +118,9 @@ void					release_dongle(t_coder *coder);
 void					*run_stages(void *args);
 void					set_cooldown(t_coder *coder, t_input *input);
 void					reverse_cooldown(t_coder *coder);
+void					free_mutex(t_mutex *mutex);
+void					free_heap(t_heap *heap);
+void					free_dongle(t_dongle *dongle);
+void					free_coder(t_coder *coder);
 
 #endif

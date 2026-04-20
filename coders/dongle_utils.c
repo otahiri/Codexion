@@ -12,6 +12,7 @@
 
 #include "codexion.h"
 #include <pthread.h>
+#include <stdio.h>
 
 long	longest_wait(t_coder *coder, t_input *input)
 {
@@ -44,10 +45,16 @@ void	cond_wait(t_coder *coder)
 	right_cooldown = coder->right->cooldown;
 	pthread_mutex_unlock(&coder->right->lock->mutex);
 	if (left_cooldown < 0)
+	{
+		printf("here\n");
 		pthread_cond_wait(&coder->left->lock->cond, &coder->left->lock->mutex);
+	}
 	else if (right_cooldown < 0)
+	{
+		printf("here\n");
 		pthread_cond_wait(&coder->right->lock->cond,
 			&coder->right->lock->mutex);
+	}
 }
 
 void	set_cooldown(t_coder *coder, t_input *input)

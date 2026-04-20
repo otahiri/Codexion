@@ -38,9 +38,7 @@ void	init_value(t_heap *heap, t_input *input)
 	int	i;
 
 	i = 0;
-	heap->cap = input->number_of_coders;
 	heap->size = 0;
-	heap->input = input;
 	while (i <= input->number_of_coders)
 		heap->coders[i++] = NULL;
 }
@@ -65,9 +63,7 @@ void	heapify_down(t_heap *heap, t_input *input)
 				heap->coders[right], input))
 			smallest = right;
 		if (smallest != idx)
-		{
 			idx = smallest;
-		}
 		else
 			break ;
 	}

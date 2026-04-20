@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
-#include <pthread.h>
-#include <time.h>
 
 int	is_valid_number(char *num)
 {
@@ -74,10 +72,10 @@ void	ft_usleep(long timer, t_coder *coder)
 
 	pthread_mutex_lock(&coder->sleep->mutex);
 	gettimeofday(&tv, NULL);
-	ts.tv_sec = time(NULL) + timer / 1000;
-	ts.tv_nsec = tv.tv_usec * 1000 + 1000 * 1000 * (timer % 1000);
-	ts.tv_sec += ts.tv_nsec / (1000 * 1000 * 1000);
-	ts.tv_nsec %= (1000 * 1000 * 1000);
+	ts.tv_sec = tv.tv_sec + timer / 1000;
+	ts.tv_nsec = tv.tv_usec * 1000 + 1000000 * (timer % 1000);
+	ts.tv_sec += ts.tv_nsec / (1000000000LL);
+	ts.tv_nsec %= (1000000000LL);
 	pthread_cond_timedwait(&coder->sleep->cond, &coder->sleep->mutex, &ts);
 	pthread_mutex_unlock(&coder->sleep->mutex);
 }

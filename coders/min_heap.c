@@ -11,10 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 
 t_heap	*create_heap(t_input *input)
 {
@@ -29,7 +25,7 @@ t_heap	*create_heap(t_input *input)
 		free(heap);
 		return (NULL);
 	}
-	heap->sleep = malloc(sizeof(t_mutex));
+	heap->sleep = create_mutex();
 	if (!heap->sleep)
 	{
 		free(heap->coders);
@@ -40,34 +36,26 @@ t_heap	*create_heap(t_input *input)
 	return (heap);
 }
 
-void	lock_mutexes(t_coder *coder)
-{
-	pthread_mutex_lock(&coder->left->lock->mutex);
-	pthread_mutex_lock(&coder->right->lock->mutex);
-}
-
-void	unlock_mutexes(t_coder *coder)
-{
-	pthread_mutex_unlock(&coder->left->lock->mutex);
-	pthread_mutex_unlock(&coder->right->lock->mutex);
-}
-
 void	heap_pop(t_coder *coder)
 {
-	t_input	*input;
+	t_input		*input;
+	t_dongle	*left;
+	t_dongle	*right;
 
 	input = coder->input;
 	pthread_mutex_lock(&coder->left->lock->mutex);
-	coder->left->heap->size--;
-	coder->left->heap->coders[0] = coder->left->heap->coders[coder->left->heap->size];
-	coder->left->heap->coders[coder->left->heap->size] = NULL;
-	heapify_down(coder->left->heap, input);
+	left = coder->left;
+	left->heap->size--;
+	left->heap->coders[0] = left->heap->coders[left->heap->size];
+	left->heap->coders[left->heap->size] = NULL;
+	heapify_down(left->heap, input);
 	pthread_mutex_unlock(&coder->left->lock->mutex);
 	pthread_mutex_lock(&coder->right->lock->mutex);
-	coder->right->heap->size--;
-	coder->right->heap->coders[0] = coder->right->heap->coders[coder->right->heap->size];
-	coder->right->heap->coders[coder->right->heap->size] = NULL;
-	heapify_down(coder->right->heap, input);
+	right = coder->right;
+	right->heap->size--;
+	right->heap->coders[0] = right->heap->coders[right->heap->size];
+	right->heap->coders[right->heap->size] = NULL;
+	heapify_down(right->heap, input);
 	pthread_mutex_unlock(&coder->right->lock->mutex);
 }
 
