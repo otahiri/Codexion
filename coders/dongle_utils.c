@@ -12,7 +12,6 @@
 
 #include "codexion.h"
 #include <pthread.h>
-#include <stdio.h>
 
 long	longest_wait(t_coder *coder, t_input *input)
 {
@@ -33,42 +32,25 @@ long	longest_wait(t_coder *coder, t_input *input)
 	return (res);
 }
 
+void	reverse_cooldown(t_dongle *dongle)
+{
+	pthread_mutex_lock(&dongle->lock->mutex);
+	dongle->cooldown = !dongle->cooldown;
+	pthread_mutex_unlock(&dongle->lock->mutex);
+}
+
 void	cond_wait(t_coder *coder)
 {
 	int	left_cooldown;
 	int	right_cooldown;
 
-	pthread_mutex_lock(&coder->left->lock->mutex);
+	pthread_mutex_lock(&coder->lock->mutex);
 	left_cooldown = coder->left->cooldown;
-	pthread_mutex_unlock(&coder->left->lock->mutex);
-	pthread_mutex_lock(&coder->right->lock->mutex);
 	right_cooldown = coder->right->cooldown;
-	pthread_mutex_unlock(&coder->right->lock->mutex);
-	if (left_cooldown < 0)
-	{
-		printf("here\n");
+	pthread_mutex_unlock(&coder->lock->mutex);
+	if (left_cooldown)
 		pthread_cond_wait(&coder->left->lock->cond, &coder->left->lock->mutex);
-	}
-	else if (right_cooldown < 0)
+	else if (right_cooldown)
 		pthread_cond_wait(&coder->right->lock->cond,
 			&coder->right->lock->mutex);
-}
-
-void	set_cooldown(t_coder *coder, t_input *input)
-{
-	printf("%ld %d taken a dongle\n", get_time(input->start, input),
-		coder->id);
-	printf("%ld %d taken a dongle\n", get_time(input->start, input),
-		coder->id);
-	reverse_cooldown(coder);
-}
-
-void	reverse_cooldown(t_coder *coder)
-{
-	pthread_mutex_lock(&coder->left->lock->mutex);
-	coder->left->cooldown = coder->left->cooldown;
-	pthread_mutex_unlock(&coder->left->lock->mutex);
-	pthread_mutex_lock(&coder->right->lock->mutex);
-	coder->right->cooldown = coder->right->cooldown;
-	pthread_mutex_unlock(&coder->right->lock->mutex);
 }

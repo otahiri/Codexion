@@ -28,8 +28,8 @@ void	*run_stages(void *args)
 	t_coder			*coder;
 
 	coder = args;
-	if (!(coder->id % 2))
-		usleep(1000);
+	if ((coder->id % 2))
+		ft_usleep(10, coder);
 	while (coder->compiles_done < coder->input->number_of_compiles_required)
 	{
 		compile(coder);
