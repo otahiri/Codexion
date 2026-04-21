@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 16:15:09 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/19 11:21:48 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/21 15:06:49 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,11 +62,12 @@ struct					s_dongle
 	long				next_available;
 };
 
-typedef struct s_monitoring
+typedef struct s_flag
 {
 	t_mutex				*lock;
-	pthread_t			monitor;
-}						t_monitoring;
+	int					off;
+	char				*dialogue;
+}						t_flag;
 
 struct					s_off
 {
@@ -86,6 +87,7 @@ struct					s_coder
 	int					compiles_done;
 	t_dongle			*left;
 	t_dongle			*right;
+	t_flag				*flag;
 };
 
 int						ft_isdigit(char c);
@@ -116,10 +118,15 @@ t_mutex					*create_mutex(void);
 void					aquire_dongles(t_coder *coder);
 void					release_dongle(t_coder *coder);
 void					*run_stages(void *args);
-void	reverse_cooldown(t_dongle *dongle);
+void					reverse_cooldown(t_dongle *dongle);
+void					set_cooldown(t_coder *coder);
 void					free_mutex(t_mutex *mutex);
 void					free_heap(t_heap *heap);
 void					free_dongle(t_dongle *dongle);
 void					free_coder(t_coder *coder);
+int						activate_switch(t_flag *flag, char *dialogue);
+int						check_switch(t_flag *flag);
+t_flag					*create_flag(void);
+void					*monitoring(void *arg);
 
 #endif

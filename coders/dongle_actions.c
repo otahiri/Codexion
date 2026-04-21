@@ -11,9 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <pthread.h>
-#include <stdio.h>
-#include <unistd.h>
 
 t_dongle	*create_dongle(t_input *input)
 {
@@ -42,10 +39,12 @@ t_dongle	*create_dongle(t_input *input)
 
 void	init_vars(int *left_cooldown, int *right_cooldown, t_coder *coder)
 {
-	pthread_mutex_lock(&coder->lock->mutex);
+	pthread_mutex_lock(&coder->left->lock->mutex);
 	*left_cooldown = coder->left->cooldown;
+	pthread_mutex_unlock(&coder->left->lock->mutex);
+	pthread_mutex_lock(&coder->right->lock->mutex);
 	*right_cooldown = coder->right->cooldown;
-	pthread_mutex_unlock(&coder->lock->mutex);
+	pthread_mutex_unlock(&coder->right->lock->mutex);
 }
 
 int	lock_dongles(t_coder *coder)
@@ -55,23 +54,17 @@ int	lock_dongles(t_coder *coder)
 
 	init_vars(&left_cooldown, &right_cooldown, coder);
 	pthread_mutex_lock(&coder->lock->mutex);
-	if (!left_cooldown && !right_cooldown
-		&& peak(coder->left) == coder->id && peak(coder->right) == coder->id)
+	if (!left_cooldown && !right_cooldown && peak(coder->left) == coder->id
+		&& peak(coder->right) == coder->id)
 	{
 		if (coder->left->next_available >= get_time(0, coder->input)
 			|| coder->right->next_available >= get_time(0, coder->input))
 		{
 			pthread_mutex_unlock(&coder->lock->mutex);
 			ft_usleep(longest_wait(coder, coder->input), coder);
-			printf("coder %d is here\n", coder->id);
 			return (0);
 		}
-		printf("%ld %d taken a dongle\n", get_time(coder->input->start, coder->input),
-			coder->id);
-		printf("%ld %d taken a dongle\n", get_time(coder->input->start, coder->input),
-			coder->id);
-		reverse_cooldown(coder->left);
-		reverse_cooldown(coder->right);
+		set_cooldown(coder);
 		pthread_mutex_unlock(&coder->lock->mutex);
 		return (1);
 	}
@@ -85,11 +78,7 @@ void	aquire_dongles(t_coder *coder)
 	coder->request = get_time(coder->input->start, coder->input);
 	heap_insert(coder);
 	while (!lock_dongles(coder))
-	{
-		printf("%ld %d is here left cooldown %d right cooldown %d priority left is %d priority right is %d\n", get_time(coder->input->start, coder->input), coder->id, coder->left->cooldown, coder->right->cooldown, peak(coder->left), peak(coder->right));
-		usleep(10000);
 		continue ;
-	}
 	heap_pop(coder);
 }
 
@@ -101,8 +90,12 @@ void	release_dongle(t_coder *coder)
 	reverse_cooldown(coder->left);
 	reverse_cooldown(coder->right);
 	input = coder->input;
+	pthread_mutex_lock(&coder->left->lock->mutex);
 	coder->left->next_available = get_time(0, input) + input->dongle_cooldown;
+	pthread_mutex_unlock(&coder->left->lock->mutex);
+	pthread_mutex_lock(&coder->right->lock->mutex);
 	coder->right->next_available = get_time(0, input) + input->dongle_cooldown;
+	pthread_mutex_unlock(&coder->right->lock->mutex);
 	pthread_mutex_unlock(&coder->lock->mutex);
 	pthread_cond_broadcast(&coder->left->lock->cond);
 	pthread_cond_broadcast(&coder->right->lock->cond);

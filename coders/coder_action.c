@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <stdio.h>
 
 void	compile(t_coder *coder)
 {
@@ -23,9 +22,23 @@ void	compile(t_coder *coder)
 	release_dongle(coder);
 }
 
+void	refactor(t_coder *coder)
+{
+	printf("%ld %d is refactoring\n", get_time(coder->input->start,
+			coder->input), coder->id);
+	ft_usleep(coder->input->time_to_refactor, coder);
+}
+
+void	debug(t_coder *coder)
+{
+	printf("%ld %d is debugging\n", get_time(coder->input->start,
+			coder->input), coder->id);
+	ft_usleep(coder->input->time_to_debug, coder);
+}
+
 void	*run_stages(void *args)
 {
-	t_coder			*coder;
+	t_coder	*coder;
 
 	coder = args;
 	if ((coder->id % 2))
@@ -33,6 +46,8 @@ void	*run_stages(void *args)
 	while (coder->compiles_done < coder->input->number_of_compiles_required)
 	{
 		compile(coder);
+		debug(coder);
+		refactor(coder);
 		coder->compiles_done++;
 	}
 	return (NULL);
