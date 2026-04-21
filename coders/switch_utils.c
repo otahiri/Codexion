@@ -16,7 +16,8 @@ int	activate_switch(t_flag *flag, char *dialogue)
 {
 	pthread_mutex_lock(&flag->lock->mutex);
 	flag->off++;
-	flag->dialogue = dialogue;
+	flag->dialogue = ft_strdup(dialogue);
+	free(dialogue);
 	pthread_mutex_unlock(&flag->lock->mutex);
 	return (1);
 }

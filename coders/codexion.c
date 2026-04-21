@@ -12,6 +12,7 @@
 
 #include "codexion.h"
 #include <pthread.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -49,6 +50,9 @@ void	free_all(t_coder **coders, t_input *input)
 	int	i;
 
 	i = 0;
+	free_mutex(coders[0]->flag->lock);
+	free(coders[0]->flag->dialogue);
+	free(coders[0]->flag);
 	while (i < input->number_of_coders)
 		free_coder(coders[i++]);
 	free(coders);
@@ -68,8 +72,8 @@ void	start_sim(t_coder **coders, t_input *input, t_flag *flag)
 		pthread_create(&coders[i]->thread, NULL, run_stages, coders[i]);
 		i++;
 	}
-	pthread_create(&burnout_monitor, NULL, monitoring, coders);
 	i = 0;
+	pthread_create(&burnout_monitor, NULL, monitoring, coders);
 	while (i < input->number_of_coders)
 	{
 		pthread_join(coders[i]->thread, NULL);

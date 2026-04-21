@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <pthread.h>
 
 t_coder	*create_coder(t_input *input, int id)
 {
@@ -35,8 +36,8 @@ t_coder	*create_coder(t_input *input, int id)
 		return (NULL);
 	}
 	coder->input = input;
-	coder->request = get_time(input->start, input);
-	coder->last_compile = get_time(input->start, input);
+	coder->request = get_time(0, input);
+	coder->last_compile = get_time(0, input);
 	coder->right = create_dongle(input);
 	return (coder);
 }

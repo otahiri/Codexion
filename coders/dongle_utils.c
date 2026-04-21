@@ -40,6 +40,8 @@ void	reverse_cooldown(t_dongle *dongle)
 
 void	set_cooldown(t_coder *coder)
 {
+	if (check_switch(coder->flag))
+		return ;
 	printf("%ld %d taken a dongle\n", get_time(coder->input->start,
 			coder->input), coder->id);
 	printf("%ld %d taken a dongle\n", get_time(coder->input->start,

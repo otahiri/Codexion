@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 #include "codexion.h"
+#include <stdlib.h>
 
 int	is_valid_number(char *num)
 {
@@ -53,6 +54,8 @@ char	*ft_strcat(char *s1, char *s2)
 	i = 0;
 	while (s2[i])
 		res[l++] = s2[i++];
+	res[l] = '\0';
+	free(s1);
 	return (res);
 }
 

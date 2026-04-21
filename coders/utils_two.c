@@ -46,3 +46,4 @@ void	free_heap(t_heap *heap)
 	free_mutex(heap->sleep);
 	free(heap);
 }
+

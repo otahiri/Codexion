@@ -53,6 +53,8 @@ int	lock_dongles(t_coder *coder)
 	int	right_cooldown;
 
 	init_vars(&left_cooldown, &right_cooldown, coder);
+	if (check_switch(coder->flag))
+		return (1);
 	pthread_mutex_lock(&coder->lock->mutex);
 	if (!left_cooldown && !right_cooldown && peak(coder->left) == coder->id
 		&& peak(coder->right) == coder->id)
@@ -75,10 +77,12 @@ int	lock_dongles(t_coder *coder)
 
 void	aquire_dongles(t_coder *coder)
 {
-	coder->request = get_time(coder->input->start, coder->input);
+	coder->request = get_time(0, coder->input);
 	heap_insert(coder);
 	while (!lock_dongles(coder))
 		continue ;
+	if (check_switch(coder->flag))
+		return ;
 	heap_pop(coder);
 }
 
