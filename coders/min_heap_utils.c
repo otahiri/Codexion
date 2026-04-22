@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <pthread.h>
 
 void	switch_coders(int a, int b, t_heap *heap)
 {
@@ -26,9 +27,7 @@ int	compare_coder(t_coder *parent, t_coder *child, t_input *input)
 	if (!strcmp("edf", input->scheduler))
 		return (child->last_compile < parent->last_compile);
 	else if (!strcmp("fifo", input->scheduler))
-	{
 		return (child->request < parent->request);
-	}
 	else
 		return (0);
 }
@@ -63,7 +62,10 @@ void	heapify_down(t_heap *heap, t_input *input)
 				heap->coders[right], input))
 			smallest = right;
 		if (smallest != idx)
+		{
+			switch_coders(idx, smallest, heap);
 			idx = smallest;
+		}
 		else
 			break ;
 	}

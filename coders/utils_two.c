@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <stdlib.h>
 
 t_mutex	*create_mutex(void)
 {
@@ -47,3 +46,10 @@ void	free_heap(t_heap *heap)
 	free(heap);
 }
 
+void	print_log(t_coder *coder, char *event, t_input *input)
+{
+	pthread_mutex_lock(&input->write_lock->mutex);
+	printf("%ld %d %s\n", get_time(coder->input->start, coder->input),
+		coder->id, event);
+	pthread_mutex_unlock(&input->write_lock->mutex);
+}

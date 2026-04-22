@@ -47,6 +47,21 @@ void	init_vars(int *left_cooldown, int *right_cooldown, t_coder *coder)
 	pthread_mutex_unlock(&coder->right->lock->mutex);
 }
 
+int	can_be_locked(t_coder *coder)
+{
+	long	left_next_available;
+	long	right_next_available;
+
+	pthread_mutex_lock(&coder->left->lock->mutex);
+	left_next_available = coder->left->next_available;
+	pthread_mutex_unlock(&coder->left->lock->mutex);
+	pthread_mutex_lock(&coder->right->lock->mutex);
+	right_next_available = coder->right->next_available;
+	pthread_mutex_unlock(&coder->right->lock->mutex);
+	return (left_next_available >= get_time(0, coder->input)
+		|| right_next_available >= get_time(0, coder->input));
+}
+
 int	lock_dongles(t_coder *coder)
 {
 	int	left_cooldown;
@@ -59,8 +74,7 @@ int	lock_dongles(t_coder *coder)
 	if (!left_cooldown && !right_cooldown && peak(coder->left) == coder->id
 		&& peak(coder->right) == coder->id)
 	{
-		if (coder->left->next_available >= get_time(0, coder->input)
-			|| coder->right->next_available >= get_time(0, coder->input))
+		if (can_be_locked(coder))
 		{
 			pthread_mutex_unlock(&coder->lock->mutex);
 			ft_usleep(longest_wait(coder, coder->input), coder);
@@ -101,6 +115,10 @@ void	release_dongle(t_coder *coder)
 	coder->right->next_available = get_time(0, input) + input->dongle_cooldown;
 	pthread_mutex_unlock(&coder->right->lock->mutex);
 	pthread_mutex_unlock(&coder->lock->mutex);
+	pthread_mutex_lock(&coder->left->lock->mutex);
 	pthread_cond_broadcast(&coder->left->lock->cond);
+	pthread_mutex_unlock(&coder->left->lock->mutex);
+	pthread_mutex_lock(&coder->right->lock->mutex);
 	pthread_cond_broadcast(&coder->right->lock->cond);
+	pthread_mutex_unlock(&coder->right->lock->mutex);
 }

@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <pthread.h>
 
 t_coder	*create_coder(t_input *input, int id)
 {

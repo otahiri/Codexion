@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <stdio.h>
 
 static void	wake_up_coders(t_coder **coders)
 {
@@ -20,8 +19,11 @@ static void	wake_up_coders(t_coder **coders)
 
 	i = 0;
 	input = coders[0]->input;
-	while (i < input->number_of_coders)
+	while (coders[i])
+	{
 		pthread_cond_broadcast(&coders[i++]->sleep->cond);
+		pthread_cond_broadcast(&coders[i++]->right->lock->cond);
+	}
 }
 
 static int	check_coders_done(t_coder **coders)
@@ -29,50 +31,48 @@ static int	check_coders_done(t_coder **coders)
 	int		i;
 	t_input	*input;
 	t_flag	*flag;
-	int	compile_count;
+	int		compile_count;
 
 	input = coders[0]->input;
 	flag = coders[0]->flag;
 	i = 0;
-	while (i < input->number_of_coders)
+	while (coders[i])
 	{
 		pthread_mutex_lock(&coders[i]->lock->mutex);
 		compile_count = coders[i]->compiles_done;
 		pthread_mutex_unlock(&coders[i]->lock->mutex);
 		pthread_mutex_lock(&flag->lock->mutex);
-		if (compile_count >= input->number_of_compiles_required)
+		if (compile_count < input->number_of_compiles_required)
 		{
 			pthread_mutex_unlock(&flag->lock->mutex);
-			return (1);
+			return (0);
 		}
 		pthread_mutex_unlock(&flag->lock->mutex);
 		i++;
 	}
-	return (0);
+	return (1);
 }
 
 static int	check_coders_burnout(t_coder **coders)
 {
 	int		i;
-	t_flag	*flag;
 	t_input	*input;
-	long		last_compile;
+	long	last_compile;
 	int		compile_count;
 
-	flag = coders[0]->flag;
 	input = coders[0]->input;
 	i = 0;
-	while (i < input->number_of_coders)
+	while (coders[i])
 	{
 		pthread_mutex_lock(&coders[i]->lock->mutex);
 		last_compile = coders[i]->last_compile;
 		compile_count = coders[i]->compiles_done;
 		pthread_mutex_unlock(&coders[i]->lock->mutex);
-		if (compile_count < input->number_of_compiles_required
-			&& (last_compile + input->time_to_burnout <= get_time(0, input)))
+		if (compile_count < input->number_of_compiles_required && (last_compile
+				+ input->time_to_burnout < get_time(0, input)))
 		{
-			activate_switch(flag, ft_strcat(ft_itoa(coders[i]->id),
-					" burned out\n"));
+			activate_switch(coders[i]->flag, " has burned out");
+			coders[i]->flag->coder_idx = i;
 			wake_up_coders(coders);
 			return (1);
 		}
@@ -95,6 +95,6 @@ void	*monitoring(void *arg)
 		usleep(1000);
 	}
 	if (check_switch(flag))
-		printf("%s", flag->dialogue);
+		print_log(coders[flag->coder_idx], flag->dialogue, coders[0]->input);
 	return (NULL);
 }

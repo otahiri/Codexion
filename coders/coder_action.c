@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <unistd.h>
 
 void	compile(t_coder *coder)
 {
@@ -20,9 +19,11 @@ void	compile(t_coder *coder)
 	coder->last_compile = get_time(0, coder->input);
 	pthread_mutex_unlock(&coder->lock->mutex);
 	if (check_switch(coder->flag))
+	{
+		release_dongle(coder);
 		return ;
-	printf("%ld %d is compiling\n", get_time(coder->input->start, coder->input),
-		coder->id);
+	}
+	print_log(coder, " is compiling", coder->input);
 	ft_usleep(coder->input->time_to_compile, coder);
 	release_dongle(coder);
 }
@@ -31,8 +32,7 @@ void	refactor(t_coder *coder)
 {
 	if (check_switch(coder->flag))
 		return ;
-	printf("%ld %d is refactoring\n", get_time(coder->input->start,
-			coder->input), coder->id);
+	print_log(coder, " is refactoring", coder->input);
 	ft_usleep(coder->input->time_to_refactor, coder);
 }
 
@@ -40,8 +40,7 @@ void	debug(t_coder *coder)
 {
 	if (check_switch(coder->flag))
 		return ;
-	printf("%ld %d is debugging\n", get_time(coder->input->start,
-			coder->input), coder->id);
+	print_log(coder, " is debugging", coder->input);
 	ft_usleep(coder->input->time_to_debug, coder);
 }
 
@@ -66,6 +65,7 @@ void	*run_stages(void *args)
 		pthread_mutex_lock(&coder->lock->mutex);
 		coder->compiles_done++;
 		pthread_mutex_unlock(&coder->lock->mutex);
+		usleep(2000);
 	}
 	return (NULL);
 }

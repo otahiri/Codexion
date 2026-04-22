@@ -42,36 +42,21 @@ void	set_cooldown(t_coder *coder)
 {
 	if (check_switch(coder->flag))
 		return ;
-	printf("%ld %d taken a dongle\n", get_time(coder->input->start,
-			coder->input), coder->id);
-	printf("%ld %d taken a dongle\n", get_time(coder->input->start,
-			coder->input), coder->id);
+	print_log(coder, " taken  a dongle", coder->input);
+	print_log(coder, " taken  a dongle", coder->input);
 	reverse_cooldown(coder->left);
 	reverse_cooldown(coder->right);
 }
 
 void	cond_wait(t_coder *coder)
 {
-	int	left_cooldown;
-	int	right_cooldown;
-
 	pthread_mutex_lock(&coder->left->lock->mutex);
-	left_cooldown = coder->left->cooldown;
+	while (coder->left->cooldown && !check_switch(coder->flag))
+		pthread_cond_wait(&coder->left->lock->cond, &coder->left->lock->mutex);
 	pthread_mutex_unlock(&coder->left->lock->mutex);
 	pthread_mutex_lock(&coder->right->lock->mutex);
-	right_cooldown = coder->right->cooldown;
-	pthread_mutex_unlock(&coder->right->lock->mutex);
-	if (left_cooldown)
-	{
-		pthread_mutex_lock(&coder->left->lock->mutex);
-		pthread_cond_wait(&coder->left->lock->cond, &coder->left->lock->mutex);
-		pthread_mutex_unlock(&coder->left->lock->mutex);
-	}
-	else if (right_cooldown)
-	{
-		pthread_mutex_lock(&coder->right->lock->mutex);
+	while (coder->right->cooldown && !check_switch(coder->flag))
 		pthread_cond_wait(&coder->right->lock->cond,
 			&coder->right->lock->mutex);
-		pthread_mutex_unlock(&coder->right->lock->mutex);
-	}
+	pthread_mutex_unlock(&coder->right->lock->mutex);
 }

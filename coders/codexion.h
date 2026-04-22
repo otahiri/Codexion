@@ -39,6 +39,7 @@ struct					s_input
 	int					dongle_cooldown;
 	char				*scheduler;
 	long				start;
+	t_mutex				*write_lock;
 };
 
 struct					s_mutex
@@ -66,6 +67,7 @@ typedef struct s_flag
 {
 	t_mutex				*lock;
 	int					off;
+	int					coder_idx;
 	char				*dialogue;
 }						t_flag;
 
@@ -128,5 +130,6 @@ int						activate_switch(t_flag *flag, char *dialogue);
 int						check_switch(t_flag *flag);
 t_flag					*create_flag(void);
 void					*monitoring(void *arg);
+void					print_log(t_coder *coder, char *event, t_input *input);
 
 #endif
