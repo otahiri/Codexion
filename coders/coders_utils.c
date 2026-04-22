@@ -35,8 +35,6 @@ t_coder	*create_coder(t_input *input, int id)
 		return (NULL);
 	}
 	coder->input = input;
-	coder->request = get_time(0, input);
-	coder->last_compile = get_time(0, input);
 	coder->right = create_dongle(input);
 	return (coder);
 }

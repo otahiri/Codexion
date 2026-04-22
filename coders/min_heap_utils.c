@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <pthread.h>
 
 void	switch_coders(int a, int b, t_heap *heap)
 {

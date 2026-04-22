@@ -47,21 +47,6 @@ void	init_vars(int *left_cooldown, int *right_cooldown, t_coder *coder)
 	pthread_mutex_unlock(&coder->right->lock->mutex);
 }
 
-int	can_be_locked(t_coder *coder)
-{
-	long	left_next_available;
-	long	right_next_available;
-
-	pthread_mutex_lock(&coder->left->lock->mutex);
-	left_next_available = coder->left->next_available;
-	pthread_mutex_unlock(&coder->left->lock->mutex);
-	pthread_mutex_lock(&coder->right->lock->mutex);
-	right_next_available = coder->right->next_available;
-	pthread_mutex_unlock(&coder->right->lock->mutex);
-	return (left_next_available >= get_time(0, coder->input)
-		|| right_next_available >= get_time(0, coder->input));
-}
-
 int	lock_dongles(t_coder *coder)
 {
 	int	left_cooldown;

@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <stdio.h>
 
 t_coder	**initialize_coders(t_input *input)
 {
@@ -70,6 +69,8 @@ void	start_sim(t_coder **coders, t_input *input)
 	input->start = get_time(0, input);
 	while (coders[i])
 	{
+		coders[i]->request = input->start;
+		coders[i]->last_compile = input->start;
 		coders[i]->flag = flag;
 		pthread_create(&coders[i]->thread, NULL, run_stages, coders[i]);
 		i++;

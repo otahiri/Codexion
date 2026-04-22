@@ -11,15 +11,12 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <pthread.h>
 
 static void	wake_up_coders(t_coder **coders)
 {
 	int		i;
-	t_input	*input;
 
 	i = 0;
-	input = coders[0]->input;
 	while (coders[i])
 	{
 		pthread_mutex_lock(&coders[i]->sleep->mutex);
