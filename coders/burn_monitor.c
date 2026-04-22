@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <pthread.h>
 
 static void	wake_up_coders(t_coder **coders)
 {
@@ -21,8 +22,16 @@ static void	wake_up_coders(t_coder **coders)
 	input = coders[0]->input;
 	while (coders[i])
 	{
-		pthread_cond_broadcast(&coders[i++]->sleep->cond);
-		pthread_cond_broadcast(&coders[i++]->right->lock->cond);
+		pthread_mutex_lock(&coders[i]->sleep->mutex);
+		pthread_cond_broadcast(&coders[i]->sleep->cond);
+		pthread_mutex_unlock(&coders[i]->sleep->mutex);
+		pthread_mutex_lock(&coders[i]->right->lock->mutex);
+		pthread_cond_broadcast(&coders[i]->right->lock->cond);
+		pthread_mutex_unlock(&coders[i]->right->lock->mutex);
+		pthread_mutex_lock(&coders[i]->left->lock->mutex);
+		pthread_cond_broadcast(&coders[i]->left->lock->cond);
+		pthread_mutex_unlock(&coders[i]->left->lock->mutex);
+		i++;
 	}
 }
 

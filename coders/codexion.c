@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <stdio.h>
 
 t_coder	**initialize_coders(t_input *input)
 {
@@ -21,7 +22,7 @@ t_coder	**initialize_coders(t_input *input)
 	coders = malloc(sizeof(t_coder) * (input->number_of_coders + 1));
 	if (!coders)
 		return (NULL);
-	while (coders[i])
+	while (i < input->number_of_coders)
 	{
 		coders[i] = create_coder(input, i + 1);
 		i++;
@@ -37,27 +38,33 @@ t_coder	**initialize_coders(t_input *input)
 	return (coders);
 }
 
-void	free_all(t_coder **coders, t_input *input)
+int	free_all(t_coder **coders, t_input *input)
 {
 	int	i;
 
 	i = 0;
-	free_mutex(coders[0]->flag->lock);
-	free(coders[0]->flag->dialogue);
-	free(coders[0]->flag);
-	while (coders[i])
-		free_coder(coders[i++]);
-	free(coders);
+	if (coders)
+	{
+		free_flag(coders[0]->flag);
+		while (coders[i])
+			free_coder(coders[i++]);
+		free(coders);
+	}
 	free(input->scheduler);
 	free_mutex(input->write_lock);
 	free(input);
+	return (0);
 }
 
-void	start_sim(t_coder **coders, t_input *input, t_flag *flag)
+void	start_sim(t_coder **coders, t_input *input)
 {
 	int			i;
 	pthread_t	burnout_monitor;
+	t_flag		*flag;
 
+	flag = create_flag();
+	if (!flag)
+		return ;
 	i = 0;
 	input->start = get_time(0, input);
 	while (coders[i])
@@ -67,12 +74,11 @@ void	start_sim(t_coder **coders, t_input *input, t_flag *flag)
 		i++;
 	}
 	i = 0;
+	if (input->number_of_coders == 1)
+		activate_switch(flag, " burnout");
 	pthread_create(&burnout_monitor, NULL, monitoring, coders);
 	while (coders[i])
-	{
-		pthread_join(coders[i]->thread, NULL);
-		i++;
-	}
+		pthread_join(coders[i++]->thread, NULL);
 	pthread_join(burnout_monitor, NULL);
 }
 
@@ -80,21 +86,14 @@ int	main(int argc, char **argv)
 {
 	t_coder	**coders;
 	t_input	*input;
-	t_flag	*flag;
 
 	input = parse_input(argv, argc);
 	if (!input)
 		return (0);
-	if (input->number_of_coders < 2 || input->time_to_burnout == 0)
+	if (input->time_to_burnout == 0)
 	{
-		free_all(NULL, input);
-		return (0);
-	}
-	flag = create_flag();
-	if (!flag)
-	{
-		free(input);
-		return (0);
+		printf("0 1 burnout\n");
+		return (free_all(NULL, input));
 	}
 	coders = initialize_coders(input);
 	if (!coders)
@@ -102,6 +101,6 @@ int	main(int argc, char **argv)
 		free(input);
 		return (0);
 	}
-	start_sim(coders, input, flag);
+	start_sim(coders, input);
 	free_all(coders, input);
 }

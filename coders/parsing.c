@@ -40,9 +40,8 @@ static int	is_input_valid(t_input *input)
 t_input	*parse_input(char **argv, int argc)
 {
 	t_input	*input;
-	t_mutex	*write_lock;
 
-	if (!validate_args(argv) || argc != 9)
+	if (argc != 9 || !validate_args(argv))
 		return (NULL);
 	input = malloc(sizeof(t_input));
 	if (!input)
@@ -55,12 +54,11 @@ t_input	*parse_input(char **argv, int argc)
 	input->number_of_compiles_required = ft_atoi(argv[6]);
 	input->dongle_cooldown = ft_atoi(argv[7]);
 	input->scheduler = ft_strdup(argv[8]);
-	write_lock = create_mutex();
-	if (!is_input_valid(input) || !write_lock)
+	input->write_lock = create_mutex();
+	if (!is_input_valid(input) || !input->write_lock)
 	{
 		free(input);
 		return (NULL);
 	}
-	input->write_lock = write_lock;
 	return (input);
 }

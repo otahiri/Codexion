@@ -131,5 +131,6 @@ int						check_switch(t_flag *flag);
 t_flag					*create_flag(void);
 void					*monitoring(void *arg);
 void					print_log(t_coder *coder, char *event, t_input *input);
+void					free_flag(t_flag *flag);
 
 #endif
