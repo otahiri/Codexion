@@ -45,6 +45,7 @@ int	free_all(t_coder **coders, t_input *input)
 	i = 0;
 	if (coders)
 	{
+		free(coders[0]->flag->dialogue);
 		free_flag(coders[0]->flag);
 		while (coders[i])
 			free_coder(coders[i++]);
@@ -75,7 +76,7 @@ void	start_sim(t_coder **coders, t_input *input)
 	}
 	i = 0;
 	if (input->number_of_coders == 1)
-		activate_switch(flag, " burnout");
+		activate_switch(flag, ft_strdup(" burnout"));
 	pthread_create(&burnout_monitor, NULL, monitoring, coders);
 	while (coders[i])
 		pthread_join(coders[i++]->thread, NULL);

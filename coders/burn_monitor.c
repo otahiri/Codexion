@@ -80,7 +80,7 @@ static int	check_coders_burnout(t_coder **coders)
 		if (compile_count < input->number_of_compiles_required && (last_compile
 				+ input->time_to_burnout < get_time(0, input)))
 		{
-			activate_switch(coders[i]->flag, " has burned out");
+			activate_switch(coders[i]->flag, ft_strdup(" has burned out"));
 			coders[i]->flag->coder_idx = i;
 			wake_up_coders(coders);
 			return (1);
