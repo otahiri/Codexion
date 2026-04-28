@@ -2,7 +2,7 @@ NAME = codexion
 
 CC = cc
 
-CFLAGS = -Wall -Werror -Wextra -pthread
+CFLAGS = -Wall -Werror -Wextra -pthread -g
 
 HEADER = coders/codexion.h
 

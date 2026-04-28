@@ -15,7 +15,7 @@
 int	check_thread_creation(t_coder *coder)
 {
 	pthread_mutex_lock(&coder->input->write_lock->mutex);
-	if (coder->input->threds_made == coder->input->number_of_coders)
+	if (coder->input->threds_made == coder->input->number_of_coders + 1)
 	{
 		pthread_mutex_unlock(&coder->input->write_lock->mutex);
 		return (1);

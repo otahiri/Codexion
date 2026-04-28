@@ -56,6 +56,7 @@ void	set_nums(t_input *input, char **argv)
 	input->number_of_compiles_required = ft_atoi(argv[6]);
 	input->dongle_cooldown = ft_atoi(argv[7]);
 	input->threds_made = 0;
+	input->kill = 0;
 }
 
 t_input	*parse_input(char **argv, int argc)

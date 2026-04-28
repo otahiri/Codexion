@@ -60,14 +60,25 @@ static t_coder	**initialize_coders(t_input *input)
 static int	start_sim(t_coder **coders, t_input *input, t_flag *flag)
 {
 	int			i;
+	int			current;
 	pthread_t	burnout_monitor;
 
 	i = 0;
+	current = 0;
 	while (coders[i])
 	{
 		extra_for_sim(coders[i], input, flag);
 		if (pthread_create(&coders[i]->thread, NULL, run_stages, coders[i]))
+		{
+			current = i;
+			i = 0;
+			pthread_mutex_lock(&input->write_lock->mutex);
+			input->kill++;
+			pthread_mutex_unlock(&input->write_lock->mutex);
+			while (i < current)
+				pthread_join(coders[i++]->thread, NULL);
 			return (0);
+		}
 		add_thread_created(input);
 		i++;
 	}
@@ -78,7 +89,16 @@ static int	start_sim(t_coder **coders, t_input *input, t_flag *flag)
 		usleep(input->time_to_burnout * 1000);
 	}
 	if (pthread_create(&burnout_monitor, NULL, monitoring, coders))
+	{
+		i = 0;
+		pthread_mutex_lock(&input->write_lock->mutex);
+		input->kill++;
+		pthread_mutex_unlock(&input->write_lock->mutex);
+		while (coders[i])
+			pthread_join(coders[i++]->thread, NULL);
 		return (0);
+	}
+	add_thread_created(input);
 	while (coders[i])
 		pthread_join(coders[i++]->thread, NULL);
 	pthread_join(burnout_monitor, NULL);
@@ -96,7 +116,10 @@ static int	extra(t_coder **coders, t_input *input)
 		return (0);
 	}
 	if (!start_sim(coders, input, flag))
+	{
+		free_all(coders, input);
 		return (1);
+	}
 	free_all(coders, input);
 	return (0);
 }

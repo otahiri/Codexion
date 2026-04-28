@@ -40,6 +40,7 @@ struct					s_input
 	long				start;
 	t_mutex				*write_lock;
 	int					threds_made;
+	int					kill;
 };
 
 struct					s_mutex

@@ -95,6 +95,13 @@ void	*monitoring(void *arg)
 
 	coders = arg;
 	flag = coders[0]->flag;
+	pthread_mutex_lock(&coders[0]->input->write_lock->mutex);
+	if (coders[0]->input->kill)
+	{
+		pthread_mutex_unlock(&coders[0]->input->write_lock->mutex);
+		return (0);
+	}
+	pthread_mutex_unlock(&coders[0]->input->write_lock->mutex);
 	while (1)
 	{
 		if (check_coders_done(coders) || check_coders_burnout(coders))
