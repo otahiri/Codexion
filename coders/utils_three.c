@@ -37,3 +37,16 @@ void	extra_for_sim(t_coder *coder, t_input *input, t_flag *flag)
 	coder->last_compile = input->start;
 	coder->flag = flag;
 }
+
+int	join_thread(t_coder **coders, int current, t_input *input)
+{
+	int	i;
+
+	i = 0;
+	pthread_mutex_lock(&input->write_lock->mutex);
+	input->kill++;
+	pthread_mutex_unlock(&input->write_lock->mutex);
+	while (i < current)
+		pthread_join(coders[i++]->thread, NULL);
+	return (0);
+}

@@ -138,5 +138,7 @@ int						check_thread_creation(t_coder *coder);
 void					add_thread_created(t_input *input);
 void					extra_for_sim(t_coder *coder, t_input *input,
 							t_flag *flag);
+int						join_thread(t_coder **coders, int current,
+							t_input *input);
 
 #endif
