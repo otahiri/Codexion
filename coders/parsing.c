@@ -29,7 +29,7 @@ static int	validate_args(char **argv)
 
 static void	*print_invalid(void)
 {
-	printf("invalid input usage example ./codexion number_of_coders\
+	fprintf(stderr, "invalid input usage example ./codexion number_of_coders\
 time_to_burnout time_to_compile time_to_debug time_to_refactor \
 number_of_compiles_required dongle_cooldown scheduler\n ");
 	return (NULL);

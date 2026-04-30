@@ -6,7 +6,7 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 16:15:09 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/28 13:24:50 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/30 11:54:31 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ typedef struct s_input	t_input;
 typedef struct s_dongle	t_dongle;
 typedef struct s_heap	t_heap;
 typedef struct s_mutex	t_mutex;
-typedef struct s_off	t_off;
 
 struct					s_input
 {
@@ -72,12 +71,6 @@ typedef struct s_flag
 	char				*dialogue;
 }						t_flag;
 
-struct					s_off
-{
-	pthread_mutex_t		lock;
-	int					off;
-};
-
 struct					s_coder
 {
 	pthread_t			thread;
@@ -93,19 +86,17 @@ struct					s_coder
 	t_flag				*flag;
 };
 
+char					*ft_strdup(const char *src);
 int						ft_isdigit(char c);
 int						ft_atoi(char *num);
 int						is_valid_number(char *num);
-char					*ft_strdup(const char *src);
-char					*ft_strcat(char *s1, char *s2);
 long					get_time(long time_stamp, t_input *input);
 void					ft_usleep(long timer, t_coder *coder);
-void					switch_coders(int a, int b, t_heap *heap);
 int						compare_coder(t_coder *parent, t_coder *child,
 							t_input *input);
 void					init_value(t_heap *heap, t_input *input);
-void					heapify_down(t_heap *heap, t_input *input);
-void					heapify_up(t_heap *heap, t_input *input);
+void					heapify_down(t_dongle *dongle, t_input *input);
+void					heapify_up(t_dongle *dongle, t_input *input);
 t_heap					*create_heap(t_input *input);
 void					heap_pop(t_coder *coder);
 void					heap_insert(t_coder *coder);
@@ -136,9 +127,11 @@ int						can_be_locked(t_coder *coder);
 int						free_all(t_coder **coders, t_input *input);
 int						check_thread_creation(t_coder *coder);
 void					add_thread_created(t_input *input);
-void					extra_for_sim(t_coder *coder, t_input *input,
+void					extra_for_sim(t_coder **coders, t_input *input,
 							t_flag *flag);
 int						join_thread(t_coder **coders, int current,
 							t_input *input);
+int						check_program_end(t_coder *coder);
+void					init_value(t_heap *heap, t_input *input);
 
 #endif

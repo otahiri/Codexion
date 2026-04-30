@@ -11,8 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <pthread.h>
-#include <unistd.h>
 
 void	compile(t_coder *coder)
 {
@@ -51,19 +49,10 @@ void	*run_stages(void *args)
 	t_coder	*coder;
 
 	coder = args;
-	while (!check_thread_creation(coder))
-	{
-		usleep(1000);
-		pthread_mutex_lock(&coder->input->write_lock->mutex);
-		if (coder->input->kill)
-		{
-			pthread_mutex_unlock(&coder->input->write_lock->mutex);
-			return (0);
-		}
-		pthread_mutex_unlock(&coder->input->write_lock->mutex);
-	}
 	if ((coder->id % 2))
 		usleep(1000);
+	if (check_program_end(coder))
+		return (0);
 	while (coder->compiles_done < coder->input->number_of_compiles_required)
 	{
 		compile(coder);
@@ -78,7 +67,7 @@ void	*run_stages(void *args)
 		pthread_mutex_lock(&coder->lock->mutex);
 		coder->compiles_done++;
 		pthread_mutex_unlock(&coder->lock->mutex);
-		usleep(1000);
+		usleep(100);
 	}
 	return (NULL);
 }

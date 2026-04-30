@@ -6,23 +6,37 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/18 09:13:31 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/18 09:21:43 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/30 11:54:37 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	switch_coders(int a, int b, t_heap *heap)
+static void	switch_coders(int *a, int *b, t_heap *heap)
 {
 	t_coder	*tmp;
 
-	tmp = heap->coders[a];
-	heap->coders[a] = heap->coders[b];
-	heap->coders[b] = tmp;
+	*a = *b;
+	tmp = heap->coders[*a];
+	heap->coders[*a] = heap->coders[*b];
+	heap->coders[*b] = tmp;
 }
 
 int	compare_coder(t_coder *parent, t_coder *child, t_input *input)
 {
+	long	child_last_comp;
+	long	parent_last_comp;
+	long	child_request;
+	long	parent_request;
+
+	pthread_mutex_lock(&child->lock->mutex);
+	child_last_comp = child->last_compile;
+	child_request = child->request;
+	pthread_mutex_unlock(&child->lock->mutex);
+	pthread_mutex_lock(&parent->lock->mutex);
+	parent_last_comp = parent->last_compile;
+	parent_request = parent->request;
+	pthread_mutex_unlock(&parent->lock->mutex);
 	if (!strcmp("edf", input->scheduler))
 		return (child->last_compile < parent->last_compile);
 	else if (!strcmp("fifo", input->scheduler))
@@ -31,54 +45,55 @@ int	compare_coder(t_coder *parent, t_coder *child, t_input *input)
 		return (0);
 }
 
-void	init_value(t_heap *heap, t_input *input)
+void	pointless(int *smallest, int *left, int *right, int idx)
 {
-	int	i;
-
-	i = 0;
-	heap->size = 0;
-	while (i <= input->number_of_coders)
-		heap->coders[i++] = NULL;
+	*smallest = idx;
+	*left = (*smallest * 2) + 1;
+	*right = (*smallest * 2) + 2;
 }
 
-void	heapify_down(t_heap *heap, t_input *input)
+void	heapify_down(t_dongle *dongle, t_input *input)
 {
-	int	smallest;
-	int	left;
-	int	right;
-	int	idx;
+	int		s;
+	int		l;
+	int		r;
+	int		i;
+	t_heap	*heap;
 
-	idx = 0;
+	i = 0;
+	heap = dongle->heap;
+	pthread_mutex_lock(&dongle->lock->mutex);
 	while (1)
 	{
-		smallest = idx;
-		left = (smallest * 2) + 1;
-		right = (smallest * 2) + 2;
-		if (left < heap->size && compare_coder(heap->coders[smallest],
-				heap->coders[left], input))
-			smallest = left;
-		if (right < heap->size && compare_coder(heap->coders[smallest],
-				heap->coders[right], input))
-			smallest = right;
-		if (smallest != idx)
-		{
-			switch_coders(idx, smallest, heap);
-			idx = smallest;
-		}
+		pointless(&s, &l, &r, i);
+		if (l < heap->size && compare_coder(heap->coders[s], heap->coders[l],
+				input))
+			s = l;
+		if (r < heap->size && compare_coder(heap->coders[s], heap->coders[r],
+				input))
+			s = r;
+		if (s != i)
+			switch_coders(&i, &s, heap);
 		else
 			break ;
 	}
+	pthread_mutex_unlock(&dongle->lock->mutex);
 }
 
-void	heapify_up(t_heap *heap, t_input *input)
+void	heapify_up(t_dongle *dongle, t_input *input)
 {
-	int	idx;
+	int		idx;
+	t_coder	*tmp;
 
-	idx = heap->size - 1;
-	while (idx > 0 && compare_coder(heap->coders[(idx - 1) / 2],
-			heap->coders[idx], input))
+	pthread_mutex_lock(&dongle->lock->mutex);
+	idx = dongle->heap->size - 1;
+	while (idx > 0 && compare_coder(dongle->heap->coders[(idx - 1) / 2],
+			dongle->heap->coders[idx], input))
 	{
-		switch_coders(idx, (idx - 1) / 2, heap);
+		tmp = dongle->heap->coders[idx];
+		dongle->heap->coders[idx] = dongle->heap->coders[(idx - 1) / 2];
+		dongle->heap->coders[(idx - 1) / 2] = tmp;
 		idx = (idx - 1) / 2;
 	}
+	pthread_mutex_unlock(&dongle->lock->mutex);
 }

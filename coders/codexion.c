@@ -6,13 +6,12 @@
 /*   By: otahiri- <otahiri-@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 16:14:23 by otahiri-          #+#    #+#             */
-/*   Updated: 2026/04/28 13:26:06 by otahiri-         ###   ########.fr       */
+/*   Updated: 2026/04/30 12:01:22 by otahiri-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <stdio.h>
-#include <unistd.h>
+#include <time.h>
 
 static t_coder	**make_coders(t_input *input)
 {
@@ -23,7 +22,7 @@ static t_coder	**make_coders(t_input *input)
 	coders = malloc(sizeof(t_coder) * (input->number_of_coders + 1));
 	if (!coders)
 		return (NULL);
-	while (i < input->number_of_coders)
+	while (i <= input->number_of_coders)
 		coders[i++] = NULL;
 	return (coders);
 }
@@ -62,7 +61,6 @@ static int	start_sim(t_coder **coders, t_input *input, t_flag *flag)
 	i = 0;
 	while (coders[i])
 	{
-		extra_for_sim(coders[i], input, flag);
 		if (pthread_create(&coders[i]->thread, NULL, run_stages, coders[i]))
 			return (join_thread(coders, i, input));
 		add_thread_created(input);
@@ -74,6 +72,7 @@ static int	start_sim(t_coder **coders, t_input *input, t_flag *flag)
 		activate_switch(flag, " burned out");
 		usleep(input->time_to_burnout * 1000);
 	}
+	extra_for_sim(coders, input, flag);
 	if (pthread_create(&burnout_monitor, NULL, monitoring, coders))
 		return (join_thread(coders, input->number_of_coders, input));
 	add_thread_created(input);
@@ -108,6 +107,7 @@ int	main(int argc, char **argv)
 	t_input	*input;
 
 	input = parse_input(argv, argc);
+	coders = NULL;
 	if (!input)
 		return (0);
 	if (input->time_to_burnout == 0)
@@ -121,6 +121,5 @@ int	main(int argc, char **argv)
 		free(input);
 		return (0);
 	}
-	input->start = get_time(0, input);
 	return (extra(coders, input));
 }

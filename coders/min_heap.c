@@ -48,15 +48,15 @@ void	heap_pop(t_coder *coder)
 	left->heap->size--;
 	left->heap->coders[0] = left->heap->coders[left->heap->size];
 	left->heap->coders[left->heap->size] = NULL;
-	heapify_down(left->heap, input);
 	pthread_mutex_unlock(&coder->left->lock->mutex);
 	pthread_mutex_lock(&coder->right->lock->mutex);
 	right = coder->right;
 	right->heap->size--;
 	right->heap->coders[0] = right->heap->coders[right->heap->size];
 	right->heap->coders[right->heap->size] = NULL;
-	heapify_down(right->heap, input);
 	pthread_mutex_unlock(&coder->right->lock->mutex);
+	heapify_down(left, input);
+	heapify_down(right, input);
 }
 
 void	heap_insert(t_coder *coder)
@@ -67,13 +67,13 @@ void	heap_insert(t_coder *coder)
 	pthread_mutex_lock(&coder->left->lock->mutex);
 	coder->left->heap->coders[coder->left->heap->size] = coder;
 	coder->left->heap->size++;
-	heapify_up(coder->left->heap, input);
 	pthread_mutex_unlock(&coder->left->lock->mutex);
 	pthread_mutex_lock(&coder->right->lock->mutex);
 	coder->right->heap->coders[coder->right->heap->size] = coder;
 	coder->right->heap->size++;
-	heapify_up(coder->right->heap, input);
 	pthread_mutex_unlock(&coder->right->lock->mutex);
+	heapify_up(coder->left, input);
+	heapify_up(coder->right, input);
 }
 
 int	peak(t_dongle *dongle)
