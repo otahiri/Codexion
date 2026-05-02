@@ -43,8 +43,8 @@ void	set_cooldown(t_coder *coder)
 	if (check_switch(coder->flag))
 		return ;
 	print_log(coder, " taken  a dongle", coder->input);
-	print_log(coder, " taken  a dongle", coder->input);
 	reverse_cooldown(coder->left);
+	print_log(coder, " taken  a dongle", coder->input);
 	reverse_cooldown(coder->right);
 }
 

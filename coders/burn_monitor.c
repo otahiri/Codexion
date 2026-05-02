@@ -14,7 +14,7 @@
 
 static void	wake_up_coders(t_coder **coders)
 {
-	int		i;
+	int	i;
 
 	i = 0;
 	while (coders[i])
@@ -87,6 +87,18 @@ static int	check_coders_burnout(t_coder **coders)
 	return (0);
 }
 
+static void	*print_burn_log(t_flag *flag, t_coder *coder)
+{
+	if (check_switch(flag))
+	{
+		pthread_mutex_lock(&coder->input->write_lock->mutex);
+		printf("%ld %d burned out\n", get_time(coder->input->start,
+				coder->input), flag->coder_idx);
+		pthread_mutex_unlock(&coder->input->write_lock->mutex);
+	}
+	return (NULL);
+}
+
 void	*monitoring(void *arg)
 {
 	t_coder	**coders;
@@ -107,9 +119,5 @@ void	*monitoring(void *arg)
 			break ;
 		usleep(1000);
 	}
-	if (check_switch(flag) && flag->dialogue)
-	{
-		print_log(coders[flag->coder_idx], flag->dialogue, coders[0]->input);
-	}
-	return (NULL);
+	return (print_burn_log(flag, coders[0]));
 }

@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <time.h>
 
 static t_coder	**make_coders(t_input *input)
 {
@@ -110,11 +109,6 @@ int	main(int argc, char **argv)
 	coders = NULL;
 	if (!input)
 		return (0);
-	if (input->time_to_burnout == 0)
-	{
-		printf("0 1 burnout\n");
-		return (free_all(NULL, input));
-	}
 	coders = initialize_coders(input);
 	if (!coders)
 	{

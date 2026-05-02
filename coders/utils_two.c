@@ -58,7 +58,8 @@ void	free_heap(t_heap *heap)
 void	print_log(t_coder *coder, char *event, t_input *input)
 {
 	pthread_mutex_lock(&input->write_lock->mutex);
-	printf("%ld %d %s\n", get_time(coder->input->start, coder->input),
-		coder->id, event);
+	if (!check_switch(coder->flag))
+		printf("%ld %d %s\n", get_time(coder->input->start, coder->input),
+			coder->id, event);
 	pthread_mutex_unlock(&input->write_lock->mutex);
 }
