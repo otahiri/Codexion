@@ -38,7 +38,12 @@ int	compare_coder(t_coder *parent, t_coder *child, t_input *input)
 	parent_request = parent->request;
 	pthread_mutex_unlock(&parent->lock->mutex);
 	if (!strcmp("edf", input->scheduler))
-		return (child->last_compile < parent->last_compile);
+	{
+		if (child->last_compile == parent->last_compile)
+			return (child->id < parent->id);
+		else
+			return (child->last_compile < parent->last_compile);
+	}
 	else if (!strcmp("fifo", input->scheduler))
 		return (child->request < parent->request);
 	else
