@@ -61,6 +61,7 @@ t_input	*make_input_mutexes(t_input *input)
 		free(input->scheduler);
 		free_mutex(input->write_lock);
 		free(input);
+		return (NULL);
 	}
 	return (input);
 }

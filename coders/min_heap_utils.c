@@ -16,10 +16,10 @@ static void	switch_coders(int *a, int *b, t_heap *heap)
 {
 	t_coder	*tmp;
 
-	*a = *b;
 	tmp = heap->coders[*a];
 	heap->coders[*a] = heap->coders[*b];
 	heap->coders[*b] = tmp;
+	*a = *b;
 }
 
 int	compare_coder(t_coder *parent, t_coder *child, t_input *input)
@@ -39,13 +39,13 @@ int	compare_coder(t_coder *parent, t_coder *child, t_input *input)
 	pthread_mutex_unlock(&parent->lock->mutex);
 	if (!strcmp("edf", input->scheduler))
 	{
-		if (child->last_compile == parent->last_compile)
+		if (child_last_comp == parent_last_comp)
 			return (child->id < parent->id);
 		else
-			return (child->last_compile < parent->last_compile);
+			return (child_last_comp < parent_last_comp);
 	}
 	else if (!strcmp("fifo", input->scheduler))
-		return (child->request < parent->request);
+		return (child_request < parent_request);
 	else
 		return (0);
 }

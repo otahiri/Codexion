@@ -12,6 +12,32 @@
 
 #include "codexion.h"
 
+t_coder	*create_coder_mutexes(t_coder *coder, t_input *input)
+{
+	if (!coder->sleep)
+	{
+		free(coder);
+		return (NULL);
+	}
+	coder->lock = create_mutex();
+	if (!coder->lock)
+	{
+		free_mutex(coder->sleep);
+		free(coder);
+		return (NULL);
+	}
+	coder->input = input;
+	coder->right = create_dongle(input);
+	if (!coder->right)
+	{
+		free_mutex(coder->sleep);
+		free_mutex(coder->lock);
+		free(coder);
+		return (NULL);
+	}
+	return (coder);
+}
+
 t_coder	*create_coder(t_input *input, int id)
 {
 	t_coder	*coder;
@@ -22,21 +48,7 @@ t_coder	*create_coder(t_input *input, int id)
 	coder->compiles_done = 0;
 	coder->id = id;
 	coder->sleep = create_mutex();
-	if (!coder->sleep)
-	{
-		free(coder);
-		return (NULL);
-	}
-	coder->lock = create_mutex();
-	if (!coder->lock)
-	{
-		free(coder->sleep);
-		free(coder);
-		return (NULL);
-	}
-	coder->input = input;
-	coder->right = create_dongle(input);
-	return (coder);
+	return (create_coder_mutexes(coder, input));
 }
 
 void	free_coder(t_coder *coder)

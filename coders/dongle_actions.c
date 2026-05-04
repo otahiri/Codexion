@@ -51,11 +51,7 @@ int	lock_dongles(t_coder *coder)
 {
 	int	left_cooldown;
 	int	right_cooldown;
-	int	left_top;
-	int	right_top;
 
-	left_top = peak(coder->left);
-	right_top = peak(coder->right);
 	init_vars(&left_cooldown, &right_cooldown, coder);
 	if (check_switch(coder->flag))
 		return (1);

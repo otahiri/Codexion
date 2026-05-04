@@ -18,7 +18,7 @@ static t_coder	**make_coders(t_input *input)
 	t_coder	**coders;
 
 	i = 0;
-	coders = malloc(sizeof(t_coder) * (input->number_of_coders + 1));
+	coders = malloc(sizeof(t_coder *) * (input->number_of_coders + 1));
 	if (!coders)
 		return (NULL);
 	while (i <= input->number_of_coders)
@@ -105,12 +105,12 @@ int	main(int argc, char **argv)
 		return (0);
 	}
 	if (!input)
-		return (0);
-	coders = initialize_coders(input, flag);
-	if (!coders)
 	{
-		free(input);
+		free_flag(flag);
 		return (0);
 	}
+	coders = initialize_coders(input, flag);
+	if (!coders)
+		return (0);
 	return (extra(coders, input, flag));
 }

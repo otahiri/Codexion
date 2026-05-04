@@ -14,7 +14,12 @@
 int	is_valid_number(char *num)
 {
 	if (*num == '+')
+	{
+		num++;
+		if (!*num)
+			return (0);
 		return (1);
+	}
 	while (*num)
 	{
 		if (!ft_isdigit(*num))

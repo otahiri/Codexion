@@ -30,8 +30,8 @@ int	ft_atoi(char *num)
 	res = 0;
 	while (*num && is_space(*num))
 		num++;
-	if (*num == '+' && !*num)
-		return (-1);
+	if (*num == '+')
+		num++;
 	while (*num && ft_isdigit(*num))
 	{
 		digit = (*num - '0');
