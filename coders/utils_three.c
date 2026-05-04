@@ -19,12 +19,7 @@ void	extra_for_sim(t_coder **coders, t_input *input, t_flag *flag)
 	i = 0;
 	input->start = get_time(0, input);
 	while (coders[i])
-	{
-		coders[i]->request = input->start;
-		coders[i]->last_compile = input->start;
-		coders[i]->flag = flag;
-		i++;
-	}
+		coders[i++]->flag = flag;
 }
 
 int	join_thread(t_coder **coders, int current, t_input *input)

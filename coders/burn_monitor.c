@@ -75,6 +75,19 @@ static int	check_coders_burnout(t_coder **coders, t_flag *flag)
 	return (0);
 }
 
+void	set_timers(t_coder **coders)
+{
+	int	i;
+
+	i = 0;
+	while (coders[i])
+	{
+		coders[i]->request = coders[i]->input->start;
+		coders[i]->last_compile = coders[i]->input->start;
+		i++;
+	}
+}
+
 void	*monitoring(void *arg)
 {
 	t_coder	**coders;
@@ -90,6 +103,7 @@ void	*monitoring(void *arg)
 	pthread_mutex_lock(&coders[0]->input->start_thread->mutex);
 	coders[0]->input->start = get_time(0, coders[0]->input);
 	coders[0]->input->start_ready = 1;
+	set_timers(coders);
 	pthread_cond_broadcast(&coders[0]->input->start_thread->cond);
 	pthread_mutex_unlock(&coders[0]->input->start_thread->mutex);
 	while (1)
