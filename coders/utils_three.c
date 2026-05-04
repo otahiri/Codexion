@@ -11,26 +11,6 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
-#include <stdio.h>
-
-int	check_thread_creation(t_input *input)
-{
-	pthread_mutex_lock(&input->write_lock->mutex);
-	if (input->threds_made == input->number_of_coders + 1)
-	{
-		pthread_mutex_unlock(&input->write_lock->mutex);
-		return (1);
-	}
-	pthread_mutex_unlock(&input->write_lock->mutex);
-	return (0);
-}
-
-void	add_thread_created(t_input *input)
-{
-	pthread_mutex_lock(&input->write_lock->mutex);
-	input->threds_made++;
-	pthread_mutex_unlock(&input->write_lock->mutex);
-}
 
 void	extra_for_sim(t_coder **coders, t_input *input, t_flag *flag)
 {
@@ -62,16 +42,12 @@ int	join_thread(t_coder **coders, int current, t_input *input)
 
 int	check_program_end(t_coder *coder)
 {
-	while (!check_thread_creation(coder->input))
+	pthread_mutex_lock(&coder->input->write_lock->mutex);
+	if (coder->input->kill)
 	{
-		usleep(100);
-		pthread_mutex_lock(&coder->input->write_lock->mutex);
-		if (coder->input->kill)
-		{
-			pthread_mutex_unlock(&coder->input->write_lock->mutex);
-			return (1);
-		}
 		pthread_mutex_unlock(&coder->input->write_lock->mutex);
+		return (1);
 	}
+	pthread_mutex_unlock(&coder->input->write_lock->mutex);
 	return (0);
 }

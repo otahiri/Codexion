@@ -38,8 +38,9 @@ struct					s_input
 	char				*scheduler;
 	long				start;
 	t_mutex				*write_lock;
-	int					threds_made;
+	t_mutex				*start_thread;
 	int					kill;
+	int					start_ready;
 };
 
 struct					s_mutex
@@ -127,13 +128,13 @@ void					free_flag(t_flag *flag);
 int						can_be_locked(t_coder *coder);
 int						free_all(t_coder **coders, t_input *input,
 							t_flag *flag);
-int						check_thread_creation(t_input *input);
-void					add_thread_created(t_input *input);
 void					extra_for_sim(t_coder **coders, t_input *input,
 							t_flag *flag);
 int						join_thread(t_coder **coders, int current,
 							t_input *input);
 int						check_program_end(t_coder *coder);
 void					init_value(t_heap *heap, t_input *input);
+void					wait_to_start(t_coder *coder);
+void					set_nums(t_input *input, char **argv);
 
 #endif

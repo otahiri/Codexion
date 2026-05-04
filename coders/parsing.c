@@ -46,17 +46,23 @@ static int	is_input_valid(t_input *input)
 	return (1);
 }
 
-void	set_nums(t_input *input, char **argv)
+t_input	*make_input_mutexes(t_input *input)
 {
-	input->number_of_coders = ft_atoi(argv[1]);
-	input->time_to_burnout = ft_atoi(argv[2]);
-	input->time_to_compile = ft_atoi(argv[3]);
-	input->time_to_debug = ft_atoi(argv[4]);
-	input->time_to_refactor = ft_atoi(argv[5]);
-	input->number_of_compiles_required = ft_atoi(argv[6]);
-	input->dongle_cooldown = ft_atoi(argv[7]);
-	input->threds_made = 0;
-	input->kill = 0;
+	input->write_lock = create_mutex();
+	if (!input->write_lock)
+	{
+		free(input->scheduler);
+		free(input);
+		return (NULL);
+	}
+	input->start_thread = create_mutex();
+	if (!input->start_thread)
+	{
+		free(input->scheduler);
+		free_mutex(input->write_lock);
+		free(input);
+	}
+	return (input);
 }
 
 t_input	*parse_input(char **argv, int argc)
@@ -75,13 +81,11 @@ t_input	*parse_input(char **argv, int argc)
 		free(input);
 		return (NULL);
 	}
-	input->write_lock = create_mutex();
-	if (!is_input_valid(input) || !input->write_lock)
+	if (!is_input_valid(input))
 	{
 		free(input->scheduler);
-		free_mutex(input->write_lock);
 		free(input);
 		return (print_invalid());
 	}
-	return (input);
+	return (make_input_mutexes(input));
 }

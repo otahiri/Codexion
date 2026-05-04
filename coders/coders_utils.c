@@ -64,6 +64,7 @@ int	free_all(t_coder **coders, t_input *input, t_flag *flag)
 	{
 		free(input->scheduler);
 		free_mutex(input->write_lock);
+		free_mutex(input->start_thread);
 		free(input);
 	}
 	return (0);

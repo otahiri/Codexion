@@ -63,7 +63,6 @@ static int	start_sim(t_coder **coders, t_input *input, t_flag *flag)
 		if (pthread_create(&coders[i]->thread, NULL, run_stages, coders[i]))
 			return (join_thread(coders, i, input));
 		i++;
-		add_thread_created(input);
 	}
 	i = 0;
 	if (input->number_of_coders == 1)
@@ -74,7 +73,6 @@ static int	start_sim(t_coder **coders, t_input *input, t_flag *flag)
 	extra_for_sim(coders, input, flag);
 	if (pthread_create(&burnout_monitor, NULL, monitoring, coders))
 		return (join_thread(coders, input->number_of_coders, input));
-	add_thread_created(input);
 	while (coders[i])
 		pthread_join(coders[i++]->thread, NULL);
 	pthread_join(burnout_monitor, NULL);

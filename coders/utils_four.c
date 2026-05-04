@@ -20,3 +20,25 @@ void	init_value(t_heap *heap, t_input *input)
 	while (i <= input->number_of_coders)
 		heap->coders[i++] = NULL;
 }
+
+void	wait_to_start(t_coder *coder)
+{
+	pthread_mutex_lock(&coder->input->start_thread->mutex);
+	while (!coder->input->start_ready)
+		pthread_cond_wait(&coder->input->start_thread->cond,
+			&coder->input->start_thread->mutex);
+	pthread_mutex_unlock(&coder->input->start_thread->mutex);
+}
+
+void	set_nums(t_input *input, char **argv)
+{
+	input->number_of_coders = ft_atoi(argv[1]);
+	input->time_to_burnout = ft_atoi(argv[2]);
+	input->time_to_compile = ft_atoi(argv[3]);
+	input->time_to_debug = ft_atoi(argv[4]);
+	input->time_to_refactor = ft_atoi(argv[5]);
+	input->number_of_compiles_required = ft_atoi(argv[6]);
+	input->dongle_cooldown = ft_atoi(argv[7]);
+	input->kill = 0;
+	input->start_ready = 0;
+}

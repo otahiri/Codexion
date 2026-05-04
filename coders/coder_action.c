@@ -49,8 +49,9 @@ void	*run_stages(void *args)
 	t_coder	*coder;
 
 	coder = (t_coder *)args;
+	wait_to_start(coder);
 	if ((coder->id % 2))
-		usleep(1000);
+		usleep((coder->input->time_to_compile / 4) * 1000);
 	if (check_program_end(coder))
 		return (0);
 	while (coder->compiles_done < coder->input->number_of_compiles_required)
