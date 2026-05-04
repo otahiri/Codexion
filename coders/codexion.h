@@ -69,6 +69,7 @@ typedef struct s_flag
 	int					off;
 	int					coder_idx;
 	char				*dialogue;
+	long				burn_ts;
 }						t_flag;
 
 struct					s_coder
@@ -124,8 +125,9 @@ void					*monitoring(void *arg);
 void					print_log(t_coder *coder, char *event, t_input *input);
 void					free_flag(t_flag *flag);
 int						can_be_locked(t_coder *coder);
-int						free_all(t_coder **coders, t_input *input);
-int						check_thread_creation(t_coder *coder);
+int						free_all(t_coder **coders, t_input *input,
+							t_flag *flag);
+int						check_thread_creation(t_input *input);
 void					add_thread_created(t_input *input);
 void					extra_for_sim(t_coder **coders, t_input *input,
 							t_flag *flag);

@@ -47,20 +47,24 @@ void	free_coder(t_coder *coder)
 	free(coder);
 }
 
-int	free_all(t_coder **coders, t_input *input)
+int	free_all(t_coder **coders, t_input *input, t_flag *flag)
 {
 	int	i;
 
 	i = 0;
+	if (flag)
+		free_flag(flag);
 	if (coders)
 	{
-		free_flag(coders[0]->flag);
 		while (coders[i])
 			free_coder(coders[i++]);
 		free(coders);
 	}
-	free(input->scheduler);
-	free_mutex(input->write_lock);
-	free(input);
+	if (input)
+	{
+		free(input->scheduler);
+		free_mutex(input->write_lock);
+		free(input);
+	}
 	return (0);
 }

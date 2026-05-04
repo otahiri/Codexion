@@ -48,7 +48,7 @@ void	*run_stages(void *args)
 {
 	t_coder	*coder;
 
-	coder = args;
+	coder = (t_coder *)args;
 	if ((coder->id % 2))
 		usleep(1000);
 	if (check_program_end(coder))

@@ -12,26 +12,6 @@
 
 #include "codexion.h"
 
-static void	wake_up_coders(t_coder **coders)
-{
-	int	i;
-
-	i = 0;
-	while (coders[i])
-	{
-		pthread_mutex_lock(&coders[i]->sleep->mutex);
-		pthread_cond_broadcast(&coders[i]->sleep->cond);
-		pthread_mutex_unlock(&coders[i]->sleep->mutex);
-		pthread_mutex_lock(&coders[i]->right->lock->mutex);
-		pthread_cond_broadcast(&coders[i]->right->lock->cond);
-		pthread_mutex_unlock(&coders[i]->right->lock->mutex);
-		pthread_mutex_lock(&coders[i]->left->lock->mutex);
-		pthread_cond_broadcast(&coders[i]->left->lock->cond);
-		pthread_mutex_unlock(&coders[i]->left->lock->mutex);
-		i++;
-	}
-}
-
 static int	check_coders_done(t_coder **coders)
 {
 	int		i;
@@ -59,12 +39,21 @@ static int	check_coders_done(t_coder **coders)
 	return (1);
 }
 
-static int	check_coders_burnout(t_coder **coders)
+static void	*print_burn_log(t_flag *flag, t_coder *coder)
+{
+	pthread_mutex_lock(&coder->input->write_lock->mutex);
+	printf("%ld %d burned out\n", flag->burn_ts, flag->coder_idx + 1);
+	pthread_mutex_unlock(&coder->input->write_lock->mutex);
+	return (NULL);
+}
+
+static int	check_coders_burnout(t_coder **coders, t_flag *flag)
 {
 	int		i;
 	t_input	*input;
 	long	last_compile;
 	int		compile_count;
+	long	now;
 
 	input = coders[0]->input;
 	i = 0;
@@ -74,12 +63,13 @@ static int	check_coders_burnout(t_coder **coders)
 		last_compile = coders[i]->last_compile;
 		compile_count = coders[i]->compiles_done;
 		pthread_mutex_unlock(&coders[i]->lock->mutex);
+		now = get_time(0, input);
 		if (compile_count < input->number_of_compiles_required && (last_compile
-				+ input->time_to_burnout < get_time(0, input)))
+				+ input->time_to_burnout <= now))
 		{
-			activate_switch(coders[i]->flag, " burned out");
+			flag->burn_ts = get_time(input->start, input);
+			activate_switch(flag, " burned out");
 			coders[i]->flag->coder_idx = i;
-			wake_up_coders(coders);
 			return (1);
 		}
 		i++;
@@ -87,25 +77,11 @@ static int	check_coders_burnout(t_coder **coders)
 	return (0);
 }
 
-static void	*print_burn_log(t_flag *flag, t_coder *coder)
-{
-	if (check_switch(flag))
-	{
-		pthread_mutex_lock(&coder->input->write_lock->mutex);
-		printf("%ld %d burned out\n", get_time(coder->input->start,
-				coder->input), flag->coder_idx);
-		pthread_mutex_unlock(&coder->input->write_lock->mutex);
-	}
-	return (NULL);
-}
-
 void	*monitoring(void *arg)
 {
 	t_coder	**coders;
-	t_flag	*flag;
 
 	coders = arg;
-	flag = coders[0]->flag;
 	pthread_mutex_lock(&coders[0]->input->write_lock->mutex);
 	if (coders[0]->input->kill)
 	{
@@ -115,9 +91,10 @@ void	*monitoring(void *arg)
 	pthread_mutex_unlock(&coders[0]->input->write_lock->mutex);
 	while (1)
 	{
-		if (check_coders_done(coders) || check_coders_burnout(coders))
+		if (check_coders_done(coders) || check_coders_burnout(coders,
+				coders[0]->flag))
 			break ;
-		usleep(1000);
+		usleep(10);
 	}
-	return (print_burn_log(flag, coders[0]));
+	return (print_burn_log(coders[0]->flag, coders[0]));
 }

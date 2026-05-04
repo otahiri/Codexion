@@ -11,16 +11,17 @@
 /* ************************************************************************** */
 
 #include "codexion.h"
+#include <stdio.h>
 
-int	check_thread_creation(t_coder *coder)
+int	check_thread_creation(t_input *input)
 {
-	pthread_mutex_lock(&coder->input->write_lock->mutex);
-	if (coder->input->threds_made == coder->input->number_of_coders + 1)
+	pthread_mutex_lock(&input->write_lock->mutex);
+	if (input->threds_made == input->number_of_coders + 1)
 	{
-		pthread_mutex_unlock(&coder->input->write_lock->mutex);
+		pthread_mutex_unlock(&input->write_lock->mutex);
 		return (1);
 	}
-	pthread_mutex_unlock(&coder->input->write_lock->mutex);
+	pthread_mutex_unlock(&input->write_lock->mutex);
 	return (0);
 }
 
@@ -61,7 +62,7 @@ int	join_thread(t_coder **coders, int current, t_input *input)
 
 int	check_program_end(t_coder *coder)
 {
-	while (!check_thread_creation(coder))
+	while (!check_thread_creation(coder->input))
 	{
 		usleep(100);
 		pthread_mutex_lock(&coder->input->write_lock->mutex);

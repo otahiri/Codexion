@@ -26,7 +26,7 @@ static t_coder	**make_coders(t_input *input)
 	return (coders);
 }
 
-static t_coder	**initialize_coders(t_input *input)
+static t_coder	**initialize_coders(t_input *input, t_flag *flag)
 {
 	t_coder	**coders;
 	int		i;
@@ -39,7 +39,7 @@ static t_coder	**initialize_coders(t_input *input)
 	{
 		coders[i] = create_coder(input, i + 1);
 		if (!coders[i])
-			return ((void *)(long)free_all(coders, input));
+			return ((void *)(long)free_all(coders, input, flag));
 		i++;
 	}
 	i = 0;
@@ -62,8 +62,8 @@ static int	start_sim(t_coder **coders, t_input *input, t_flag *flag)
 	{
 		if (pthread_create(&coders[i]->thread, NULL, run_stages, coders[i]))
 			return (join_thread(coders, i, input));
-		add_thread_created(input);
 		i++;
+		add_thread_created(input);
 	}
 	i = 0;
 	if (input->number_of_coders == 1)
@@ -81,22 +81,14 @@ static int	start_sim(t_coder **coders, t_input *input, t_flag *flag)
 	return (1);
 }
 
-static int	extra(t_coder **coders, t_input *input)
+static int	extra(t_coder **coders, t_input *input, t_flag *flag)
 {
-	t_flag	*flag;
-
-	flag = create_flag();
-	if (!flag)
-	{
-		free_all(coders, input);
-		return (0);
-	}
 	if (!start_sim(coders, input, flag))
 	{
-		free_all(coders, input);
+		free_all(coders, input, flag);
 		return (1);
 	}
-	free_all(coders, input);
+	free_all(coders, input, flag);
 	return (0);
 }
 
@@ -104,16 +96,23 @@ int	main(int argc, char **argv)
 {
 	t_coder	**coders;
 	t_input	*input;
+	t_flag	*flag;
 
 	input = parse_input(argv, argc);
 	coders = NULL;
+	flag = create_flag();
+	if (!flag)
+	{
+		free_all(coders, input, NULL);
+		return (0);
+	}
 	if (!input)
 		return (0);
-	coders = initialize_coders(input);
+	coders = initialize_coders(input, flag);
 	if (!coders)
 	{
 		free(input);
 		return (0);
 	}
-	return (extra(coders, input));
+	return (extra(coders, input, flag));
 }
