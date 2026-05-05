@@ -67,7 +67,7 @@ static int	check_coders_burnout(t_coder **coders, t_flag *flag)
 		{
 			flag->burn_ts = get_time(input->start, input);
 			activate_switch(flag, " burned out");
-			coders[i]->flag->coder_idx = i;
+			coders[i]->flag->coder_idx = i + 1;
 			return (1);
 		}
 		i++;
